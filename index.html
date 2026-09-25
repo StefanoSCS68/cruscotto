@@ -71,7 +71,7 @@ header h1{font-size:20px;font-weight:700}
   <h1 style="font-size:22px">Cruscotto conto</h1>
   <p>Collega Google Drive e seleziona i due file creati dalla dashboard nella cartella <b>DashboardFinanziario</b>:<br><b>cruscotto.enc.json</b> e <b>spese_in_sospeso.enc.json</b>.</p>
   <p style="font-size:12px">L'app può accedere solo ai file che selezioni.</p>
-  <button class="btn" onclick="setupDrive()">Collega Google Drive</button>
+  <button class="btn" id="btnSetup" onclick="setupDrive()">Collega Google Drive</button>
   <div class="msg ko" id="setupMsg"></div>
 </div></section>
 
@@ -202,9 +202,9 @@ async function setupDrive(){
       .setOAuthToken(t).setDeveloperKey(CFG.API_KEY).setAppId(CFG.APP_ID).setLocale('it').setTitle('Seleziona i 2 file .enc.json')
       .setCallback(function(d){
         if(d.action!==google.picker.Action.PICKED)return;
-        var sum=null,pend=null;(d.docs||[]).forEach(function(f){if(/^cruscotto/i.test(f.name))sum=f.id;if(/^spese_in_sospeso/i.test(f.name))pend=f.id;});
-        if(!sum||!pend){$('setupMsg').textContent='Seleziona entrambi i file: cruscotto.enc.json e spese_in_sospeso.enc.json.';return;}
-        LS.set('files',{sum:sum,pend:pend});start();
+        var fp=LS.get('fpart')||{};(d.docs||[]).forEach(function(f){if(/^cruscotto/i.test(f.name))fp.sum=f.id;if(/^spese_in_sospeso/i.test(f.name))fp.pend=f.id;});
+        if(!fp.sum||!fp.pend){LS.set('fpart',fp);$('setupMsg').className='msg warn';$('setupMsg').textContent='✓ '+(fp.sum?'cruscotto.enc.json':'spese_in_sospeso.enc.json')+' selezionato. Tocca di nuovo il pulsante e seleziona '+(fp.sum?'spese_in_sospeso.enc.json':'cruscotto.enc.json')+'.';$('btnSetup').textContent='Seleziona il secondo file';return;}
+        LS.set('files',{sum:fp.sum,pend:fp.pend});LS.del('fpart');start();
       }).build();
     picker.setVisible(true);
   }catch(e){$('setupMsg').textContent=e.message;}
@@ -235,7 +235,7 @@ async function refreshData(interactive){
   }catch(e){setFoot('Aggiornamento non riuscito: '+e.message+'. Mostro gli ultimi dati salvati.');}
 }
 function setFoot(t){$('foot').innerHTML=t+'<br><a href="#" onclick="resetApp();return false">Scollega / reimposta</a>';}
-function resetApp(){if(!confirm('Scollegare Google Drive e cancellare i dati salvati su questo telefono?'))return;['files','env','pwd','queue','consented','pendRemote'].forEach(LS.del);try{sessionStorage.clear();}catch(e){}location.reload();}
+function resetApp(){if(!confirm('Scollegare Google Drive e cancellare i dati salvati su questo telefono?'))return;['files','env','pwd','queue','consented','pendRemote','fpart'].forEach(LS.del);try{sessionStorage.clear();}catch(e){}location.reload();}
 
 /* ======================= RENDER ======================= */
 function render(){
