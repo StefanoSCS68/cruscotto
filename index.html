@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1117">
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<title>Cruscotto Conto</title>
+<style>
+:root{--bg:#0f1117;--card:#181b24;--card2:#1f2330;--line:rgba(255,255,255,.07);--text:#e8eaf2;--muted:#8a90a8;--ok:#34c78a;--warn:#f5b423;--ko:#e05252;--acc:#4f8ef7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:0 16px 100px;max-width:480px;margin:0 auto;-webkit-font-smoothing:antialiased}
+header{padding:18px 2px 8px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+header h1{font-size:20px;font-weight:700}
+.sync{font-size:11px;color:var(--muted);text-align:right}
+.sync b{font-weight:600}
+.refresh{margin-top:4px;background:none;border:1px solid var(--line);color:var(--acc);border-radius:8px;padding:4px 10px;font-size:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.big{font-size:30px;font-weight:750;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.mid{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.sub{font-size:12px;color:var(--muted);margin-top:2px}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.ko{color:var(--ko)}
+.status{display:flex;align-items:center;gap:12px}
+.dot{width:44px;height:44px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:22px;font-weight:800;color:#0f1117}
+.dot.ok{background:var(--ok);box-shadow:0 0 0 6px rgba(52,199,138,.15)}
+.dot.warn{background:var(--warn);box-shadow:0 0 0 6px rgba(245,180,35,.15)}
+.dot.ko{background:var(--ko);box-shadow:0 0 0 6px rgba(224,82,82,.15)}
+.status h2{font-size:17px}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.kv:first-of-type{border-top:none}
+.kv span:last-child{font-weight:650;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.kv small{display:block;font-size:11px;color:var(--muted);font-weight:400}
+.bar{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;margin:6px 0 4px}
+.bar i{display:block;height:100%;border-radius:4px;width:0}
+.cardline{margin-top:12px}
+.cardline .top{display:flex;justify-content:space-between;font-size:14px}
+.cardline .top b{font-variant-numeric:tabular-nums}
+.hero{background:linear-gradient(135deg,#1c2640,#181b24);border-color:rgba(79,142,247,.35)}
+.note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.45}
+.fab{position:fixed;right:20px;bottom:24px;width:58px;height:58px;border-radius:50%;background:var(--acc);color:#fff;border:none;font-size:30px;box-shadow:0 8px 24px rgba(79,142,247,.45)}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center;z-index:9}
+.sheet-bg.open{display:flex}
+.sheet{background:var(--card2);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px 28px}
+.sheet h3{font-size:17px;margin-bottom:12px}
+.field{margin-top:10px}
+.field label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
+.field input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:16px}
+.seg{display:flex;gap:6px}.seg button{flex:1;padding:10px 4px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--muted);font-size:13px}
+.seg button.on{background:rgba(79,142,247,.2);border-color:var(--acc);color:#fff}
+.btn{width:100%;margin-top:16px;padding:14px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:16px;font-weight:650}
+.btn.sec{background:transparent;border:1px solid var(--line);color:var(--text)}
+.msg{font-size:12px;margin-top:10px}
+.screen{display:none}.screen.on{display:block}
+.center{text-align:center;padding-top:40px}
+.center p{color:var(--muted);font-size:14px;margin-top:10px;line-height:1.5}
+.pend{margin-top:8px;font-size:12px;color:var(--warn)}
+.chk{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-top:12px}
+.foot{font-size:11px;color:var(--muted);text-align:center;margin-top:18px;line-height:1.6}
+.foot a{color:var(--muted)}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+
+<!-- ========== SCHERMATA: COLLEGAMENTO GOOGLE DRIVE ========== -->
+<section class="screen" id="scrSetup"><div class="center">
+  <h1 style="font-size:22px">Cruscotto conto</h1>
+  <p>Collega Google Drive e seleziona i due file creati dalla dashboard nella cartella <b>DashboardFinanziario</b>:<br><b>cruscotto.enc.json</b> e <b>spese_in_sospeso.enc.json</b>.</p>
+  <p style="font-size:12px">L'app può accedere solo ai file che selezioni.</p>
+  <button class="btn" onclick="setupDrive()">Collega Google Drive</button>
+  <div class="msg ko" id="setupMsg"></div>
+</div></section>
+
+<!-- ========== SCHERMATA: PASSWORD ========== -->
+<section class="screen" id="scrPwd"><div class="center">
+  <h1 style="font-size:22px">Sblocca i dati</h1>
+  <p>Inserisci la password scelta nella dashboard per la cifratura dei dati.</p>
+  <div class="field" style="text-align:left"><input type="password" id="pwdIn" autocomplete="current-password" placeholder="Password"></div>
+  <label class="chk"><input type="checkbox" id="pwdRem"> Ricorda su questo telefono</label>
+  <button class="btn" onclick="unlock()">Sblocca</button>
+  <div class="msg ko" id="pwdMsg"></div>
+</div></section>
+
+<!-- ========== SCHERMATA: CRUSCOTTO ========== -->
+<section class="screen" id="scrMain">
+<header>
+  <h1>Cruscotto conto</h1>
+  <div class="sync">Dati dashboard del<br><b id="asof"></b><br><button class="refresh" onclick="refreshData(true)">↻ Aggiorna</button></div>
+</header>
+
+<section class="card">
+  <div class="status"><div class="dot" id="semDot"></div><div><h2 id="semTitle"></h2><div class="sub" id="semSub"></div></div></div>
+  <div style="margin-top:12px">
+    <div class="kv"><span id="kFineL">Saldo contabile fine anno (proiettato)<small id="kFineT"></small></span><span id="kFine"></span></div>
+    <div class="kv"><span>Minimo saldo disponibile<small id="kMinM"></small></span><span id="kMin"></span></div>
+    <div class="kv"><span>Scostamento saldo contabile vs target<small id="kScostM">ultimo mese chiuso</small></span><span id="kScost"></span></div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="row">
+    <div><div class="lbl">Saldo disponibile</div><div class="mid" id="sDisp"></div><div class="sub" id="sFido"></div></div>
+    <div><div class="lbl">Saldo contabile</div><div class="mid" id="sCont"></div><div class="sub">senza fido</div></div>
+  </div>
+</section>
+
+<section class="card hero">
+  <div class="lbl">Carte: puoi ancora spendere</div>
+  <div class="big" id="cResTot"></div>
+  <div class="sub" id="cSub"></div>
+  <div class="cardline"><div class="top"><span>Carta Base</span><b id="cB"></b></div><div class="bar"><i id="cBbar"></i></div><div class="sub" id="cBres"></div></div>
+  <div class="cardline"><div class="top"><span>Carta Oro</span><b id="cO"></b></div><div class="bar"><i id="cObar"></i></div><div class="sub" id="cOres"></div></div>
+</section>
+
+<section class="card">
+  <div class="lbl">Contanti ed extra: prelevabile ora</div>
+  <div class="big" id="xPrel"></div>
+  <div class="bar"><i id="xBar"></i></div>
+  <div class="sub" id="xSub"></div>
+  <div class="note" id="xNote"></div>
+</section>
+
+<section class="card">
+  <div class="lbl" id="kCondL">Condominio (extra)</div>
+  <div class="row" style="align-items:flex-end"><div><div class="mid" id="kCond"></div></div><div style="text-align:right"><div class="sub" id="kCondRes"></div></div></div>
+  <div class="bar"><i id="kCondBar"></i></div>
+</section>
+
+<section class="card">
+  <div class="lbl">Minimo saldo disponibile per mese</div>
+  <div class="sub">prima dell'accredito dello stipendio · linea rossa = fido esaurito</div>
+  <div id="chart" style="margin-top:10px"></div>
+</section>
+
+<div class="pend" id="pendInfo"></div>
+<div class="foot" id="foot"></div>
+<button class="fab" onclick="openSheet()" aria-label="Registra spesa">+</button>
+</section>
+
+<div class="sheet-bg" id="sheet" onclick="if(event.target===this)closeSheet()">
+  <div class="sheet">
+    <h3>Registra una spesa</h3>
+    <div class="field"><label>Tipo</label>
+      <div class="seg" id="segTipo"><button class="on" data-v="extra">Extra / contanti</button><button data-v="base">Carta Base</button><button data-v="oro">Carta Oro</button></div>
+    </div>
+    <div class="field"><label>Importo (€)</label><input id="fImp" inputmode="decimal" placeholder="0,00"></div>
+    <div class="field"><label>Descrizione</label><input id="fDesc" placeholder="es. Prelievo, Ristorante…"></div>
+    <button class="btn" id="btnSave" onclick="saveSpesa()">Salva</button>
+    <div class="msg" id="sheetMsg"></div>
+  </div>
+</div>
+
+<script>
+/* ======================= UTILITÀ ======================= */
+var CFG=window.CRUSCOTTO_CONFIG||{},LS={get:function(k){try{return JSON.parse(localStorage.getItem('cc_'+k));}catch(e){return null;}},set:function(k,v){try{localStorage.setItem('cc_'+k,JSON.stringify(v));}catch(e){}},del:function(k){try{localStorage.removeItem('cc_'+k);}catch(e){}}};
+function $(id){return document.getElementById(id);}
+function show(id){['scrSetup','scrPwd','scrMain'].forEach(function(s){$(s).classList.toggle('on',s===id);});}
+function eur(v,dec){var s=Math.abs(v).toFixed(dec?2:0).replace('.',',');s=s.replace(/\B(?=(\d{3})+(?!\d))/g,'.');return (v<0?'-':'')+'€'+s;}
+function col(v,warnAt){return v<0?'ko':(v<warnAt?'warn':'ok');}
+var DEMO=/[?&]demo=1/.test(location.search);
+
+/* ======================= CIFRATURA (identica alla dashboard) ======================= */
+function b64(buf){var b=new Uint8Array(buf),s='';for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s);}
+function unb64(s){var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
+async function deriveKey(pwd,salt,iter){var base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pwd),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+async function encrypt(obj,pwd){var salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),iter=250000;var key=await deriveKey(pwd,salt,iter);var ct=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,new TextEncoder().encode(JSON.stringify(obj)));return {v:1,alg:'PBKDF2-SHA256/AES-GCM',iter:iter,salt:b64(salt),iv:b64(iv),ct:b64(ct)};}
+async function decrypt(env,pwd){var key=await deriveKey(pwd,unb64(env.salt),env.iter||250000);var pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(env.iv)},key,unb64(env.ct));return JSON.parse(new TextDecoder().decode(pt));}
+
+/* ======================= GOOGLE (accesso solo ai file selezionati: drive.file) ======================= */
+var SCOPE='https://www.googleapis.com/auth/drive.file',tokenClient=null,token=null,tokenExp=0,_tokWait=null;
+function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error('Impossibile caricare '+src));};document.head.appendChild(s);});}
+async function ensureGis(){if(!window.google||!google.accounts)await loadScript('https://accounts.google.com/gsi/client');}
+async function getToken(interactive){
+  if(token&&Date.now()<tokenExp-60000)return token;
+  var ss=null;try{ss=JSON.parse(sessionStorage.getItem('cc_tok'));}catch(e){}
+  if(ss&&Date.now()<ss.exp-60000){token=ss.t;tokenExp=ss.exp;return token;}
+  if(!interactive)return null;
+  await ensureGis();
+  return new Promise(function(res,rej){
+    tokenClient=google.accounts.oauth2.initTokenClient({client_id:CFG.CLIENT_ID,scope:SCOPE,callback:function(r){
+      if(r.error){rej(new Error(r.error));return;}
+      token=r.access_token;tokenExp=Date.now()+(+r.expires_in||3600)*1000;try{sessionStorage.setItem('cc_tok',JSON.stringify({t:token,exp:tokenExp}));}catch(e){}res(token);
+    },error_callback:function(e){rej(new Error(e&&e.type||'accesso annullato'));}});
+    tokenClient.requestAccessToken({prompt:LS.get('consented')?'':'consent'});
+  });
+}
+async function driveGet(id){var t=await getToken(true);var r=await fetch('https://www.googleapis.com/drive/v3/files/'+id+'?alt=media',{headers:{Authorization:'Bearer '+t}});if(!r.ok)throw new Error('Lettura Drive: '+r.status);return r.text();}
+async function drivePut(id,text){var t=await getToken(true);var r=await fetch('https://www.googleapis.com/upload/drive/v3/files/'+id+'?uploadType=media',{method:'PATCH',headers:{Authorization:'Bearer '+t,'Content-Type':'application/json'},body:text});if(!r.ok)throw new Error('Scrittura Drive: '+r.status);}
+async function setupDrive(){
+  $('setupMsg').textContent='';
+  try{
+    if(!CFG.CLIENT_ID||!CFG.API_KEY||!CFG.APP_ID)throw new Error('Configurazione Google mancante in config.js (vedi README).');
+    var t=await getToken(true);LS.set('consented',true);
+    await loadScript('https://apis.google.com/js/api.js');
+    await new Promise(function(res){gapi.load('picker',res);});
+    var view=new google.picker.DocsView(google.picker.ViewId.DOCS).setMode(google.picker.DocsViewMode.LIST).setQuery('enc.json');
+    var picker=new google.picker.PickerBuilder().addView(view).enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+      .setOAuthToken(t).setDeveloperKey(CFG.API_KEY).setAppId(CFG.APP_ID).setLocale('it').setTitle('Seleziona i 2 file .enc.json')
+      .setCallback(function(d){
+        if(d.action!==google.picker.Action.PICKED)return;
+        var sum=null,pend=null;(d.docs||[]).forEach(function(f){if(/^cruscotto/i.test(f.name))sum=f.id;if(/^spese_in_sospeso/i.test(f.name))pend=f.id;});
+        if(!sum||!pend){$('setupMsg').textContent='Seleziona entrambi i file: cruscotto.enc.json e spese_in_sospeso.enc.json.';return;}
+        LS.set('files',{sum:sum,pend:pend});start();
+      }).build();
+    picker.setVisible(true);
+  }catch(e){$('setupMsg').textContent=e.message;}
+}
+
+/* ======================= DATI ======================= */
+var PWD=null,D=null,cachedEnvKey='env';
+async function unlock(){
+  var p=$('pwdIn').value;if(!p)return;$('pwdMsg').textContent='Verifica…';
+  var env=LS.get(cachedEnvKey);
+  try{
+    if(env){D=await decrypt(env,p);}
+    PWD=p;if($('pwdRem').checked)LS.set('pwd',p);
+    $('pwdMsg').textContent='';show('scrMain');if(D)render();refreshData(!env);
+  }catch(e){$('pwdMsg').textContent='Password errata.';}
+}
+async function refreshData(interactive){
+  if(DEMO)return;
+  var f=LS.get('files');if(!f){show('scrSetup');return;}
+  var tok=await getToken(false);if(!tok&&!interactive){setFoot('Tocca “↻ Aggiorna” per scaricare i dati più recenti.');return;}
+  try{
+    setFoot('Aggiornamento in corso…');
+    var txt=await driveGet(f.sum),env=JSON.parse(txt),d=await decrypt(env,PWD);
+    LS.set(cachedEnvKey,env);D=d;
+    try{var pt=(await driveGet(f.pend)).trim();LS.set('pendRemote',pt?await decrypt(JSON.parse(pt),PWD):[]);}catch(e){}
+    render();setFoot('Dati aggiornati da Google Drive.');
+    flushQueue();
+  }catch(e){setFoot('Aggiornamento non riuscito: '+e.message+'. Mostro gli ultimi dati salvati.');}
+}
+function setFoot(t){$('foot').innerHTML=t+'<br><a href="#" onclick="resetApp();return false">Scollega / reimposta</a>';}
+function resetApp(){if(!confirm('Scollegare Google Drive e cancellare i dati salvati su questo telefono?'))return;['files','env','pwd','queue','consented','pendRemote'].forEach(LS.del);try{sessionStorage.clear();}catch(e){}location.reload();}
+
+/* ======================= RENDER ======================= */
+function render(){
+  if(!D)return;
+  var fido=D.fido||0,mesi=D.mesi||[],minM=mesi.length?mesi.reduce(function(a,b){return b[1]<a[1]?b:a;}):['—',0,0,0];
+  var q=LS.get('queue')||[],pr=LS.get('pendRemote')||[],seen={},adj={extra:0,base:0,oro:0};q.concat(pr).forEach(function(i){if(seen[i.id])return;seen[i.id]=1;adj[i.tipo]=(adj[i.tipo]||0)+(+i.importo||0);});
+  var cB=D.carte.base,cO=D.carte.oro,spB=cB.speso+adj.base,spO=cO.speso+adj.oro,spX=D.extra.speso+adj.extra;
+  var dt=new Date(D.asof);$('asof').textContent=dt.toLocaleDateString('it-IT')+' '+dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  var old=(Date.now()-dt.getTime())>3*86400000;$('asof').className=old?'warn':'ok';
+  // la previsione include già: extra del mese = max(budget, speso registrato); carte = budget di addebito
+  var minEff=minM[1]-Math.max(0,spX-Math.max(D.extra.budget,D.extra.speso))-Math.max(0,spB-cB.budget)-Math.max(0,spO-cO.budget);
+  var t=D.target,sem=minEff<0?'ko':((minEff<500||(t.fineT!==null&&t.fine<t.fineT-500))?'warn':'ok');
+  var dot=$('semDot');dot.className='dot '+sem;dot.textContent=sem==='ok'?'✓':(sem==='warn'?'!':'✕');
+  $('semTitle').textContent=sem==='ok'?'In linea con il target':(sem==='warn'?'Attenzione: margine ridotto':'Fuori target');
+  $('semSub').textContent=sem==='ok'?'Saldo disponibile mai sotto zero nel periodo previsto':(sem==='warn'?'Il margine sul fido si sta assottigliando':'Previsto utilizzo oltre il fido');
+  $('kFineL').firstChild.textContent='Saldo contabile fine '+t.anno+' (proiettato)';
+  $('kFine').innerHTML='<span class="'+(t.fineT===null||t.fine>=t.fineT?'ok':'ko')+'">'+eur(t.fine)+'</span>';
+  $('kFineT').textContent=t.fineT===null?'nessun target fissato':'target '+eur(t.fineT);
+  $('kMin').innerHTML='<span class="'+col(minEff,500)+'">'+eur(minEff)+'</span>';
+  $('kMinM').textContent=minM[0]+', prima del 27 · contabile '+eur(minEff-fido);
+  $('kScost').innerHTML=t.ultimoScost===null?'<span style="color:var(--muted)">n.d.</span>':'<span class="'+(t.ultimoScost>=0?'ok':'ko')+'">'+(t.ultimoScost>=0?'+':'')+eur(t.ultimoScost)+'</span>';
+  $('kScostM').textContent=t.ultimoScost===null?'disponibile dal primo mese chiuso dell\'anno target':'a fine '+t.ultimoMese;
+  var sd=D.saldoDisp-adj.extra,sc=D.saldoCont-adj.extra;
+  $('sDisp').innerHTML='<span class="'+col(sd,1000)+'">'+eur(sd,1)+'</span>';$('sFido').textContent='incluso fido '+eur(fido);
+  $('sCont').innerHTML='<span class="'+(sc>=0?'ok':'ko')+'">'+eur(sc,1)+'</span>';
+  var rB=Math.max(0,cB.budget-spB),rO=Math.max(0,cO.budget-spO);
+  $('cResTot').innerHTML='<span class="'+((rB+rO)>0?'ok':'ko')+'">'+eur(rB+rO)+'</span>';
+  $('cSub').textContent='fino alla chiusura, con addebito a '+D.carte.addebito;
+  function cardBar(k,budget,sp,res){var pct=budget>0?Math.min(100,sp/budget*100):100;$(k).textContent=eur(sp)+' / '+eur(budget);
+    var b=$(k+'bar');b.style.width=pct+'%';b.style.background=pct>=100?'var(--ko)':(pct>=85?'var(--warn)':'var(--ok)');
+    $(k+'res').innerHTML=res>0?'residuo <b class="'+(pct>=85?'warn':'ok')+'">'+eur(res)+'</b>':'<b class="ko">budget superato di '+eur(sp-budget)+'</b>';}
+  cardBar('cB',cB.budget,spB,rB);cardBar('cO',cO.budget,spO,rO);
+  var xRes=D.extra.budget-spX,xPrel=Math.max(0,Math.min(xRes,minEff));
+  $('xPrel').innerHTML='<span class="'+(xPrel>0?'ok':'ko')+'">'+eur(xPrel)+'</span>';
+  var xPct=D.extra.budget>0?Math.min(100,spX/D.extra.budget*100):100;$('xBar').style.width=xPct+'%';$('xBar').style.background=xPct>=100?'var(--ko)':(xPct>=85?'var(--warn)':'var(--ok)');
+  $('xSub').textContent='Extra di '+D.extra.mese+': '+eur(spX)+' su budget '+eur(D.extra.budget);
+  $('xNote').innerHTML=xRes<0?'Budget del mese superato di <b class="ko">'+eur(-xRes)+'</b>: ogni ulteriore prelievo riduce di pari importo il margine sul fido ('+eur(minEff)+' a '+minM[0]+'). Dal '+D.extra.prossimoDa+' torni ad avere '+eur(D.extra.prossimoBudget)+'.'
+    :'Prelevabile = budget extra residuo del mese, entro il margine sul fido ('+eur(minEff)+' a '+minM[0]+').';
+  var cRes=D.cond.budget-D.cond.pagato,cPct=D.cond.budget>0?Math.min(100,D.cond.pagato/D.cond.budget*100):0;
+  $('kCondL').textContent='Condominio '+D.cond.anno+' (extra)';$('kCond').textContent=eur(D.cond.pagato)+' / '+eur(D.cond.budget);
+  $('kCondRes').innerHTML=cRes>=0?'residuo <b>'+eur(cRes)+'</b>':'<b class="ko">oltre di '+eur(-cRes)+'</b>';
+  $('kCondBar').style.width=cPct+'%';$('kCondBar').style.background=cRes<0?'var(--ko)':'var(--acc)';
+  chart(mesi,minM,fido);
+  $('pendInfo').textContent=(q.length?('⏳ '+q.length+' spese annotate non ancora inviate a Google Drive. '):'')+(pr.length?('📥 '+pr.length+' spese inviate, in attesa di importazione nella dashboard (già conteggiate qui).'):'');
+}
+function chart(mesi,minM,fido){
+  if(!mesi.length){$('chart').innerHTML='';return;}
+  var W=440,H=170,pad=26,n=mesi.length,vals=mesi.map(function(m){return m[1];}),max=Math.max.apply(null,vals.concat([1000])),min=Math.min(-fido*0.2,Math.min.apply(null,vals));
+  var y=function(v){return pad+(max-v)/(max-min)*(H-pad*2);},bw=(W-20)/n,s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Minimo saldo disponibile per mese">';
+  s+='<line x1="10" x2="'+(W-10)+'" y1="'+y(0)+'" y2="'+y(0)+'" stroke="#e05252" stroke-width="1.5" stroke-dasharray="4 3"/>';
+  var step=Math.ceil(n/5);
+  mesi.forEach(function(m,i){var v=m[1],x=10+i*bw+2,y0=y(0),yv=y(v),h=Math.abs(y0-yv),c=v<0?'#e05252':(v<1500?'#f5b423':'#34c78a');
+    s+='<rect x="'+x+'" y="'+Math.min(y0,yv)+'" width="'+(bw-4)+'" height="'+Math.max(1,h)+'" rx="3" fill="'+c+'" opacity="'+(m===minM?1:.7)+'"><title>'+m[0]+': disponibile '+eur(v)+' · contabile '+eur(m[2])+'</title></rect>';
+    if(i%step===0)s+='<text x="'+(x+(bw-4)/2)+'" y="'+(H-6)+'" font-size="10" fill="#8a90a8" text-anchor="middle">'+m[0]+'</text>';
+    if(m===minM)s+='<text x="'+(x+(bw-4)/2)+'" y="'+(yv-5)+'" font-size="10" fill="#f5b423" text-anchor="middle" font-weight="700">'+eur(v)+'</text>';});
+  $('chart').innerHTML=s+'</svg>';
+}
+
+/* ======================= SPESE DAL TELEFONO ======================= */
+var tipo='extra';
+document.querySelectorAll('#segTipo button').forEach(function(b){b.onclick=function(){document.querySelectorAll('#segTipo button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');tipo=b.dataset.v;};});
+function openSheet(){$('sheetMsg').textContent='';$('sheet').classList.add('open');setTimeout(function(){$('fImp').focus();},100);}
+function closeSheet(){$('sheet').classList.remove('open');}
+async function saveSpesa(){
+  var v=parseFloat(($('fImp').value||'').replace(/\s/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.'));
+  if(!(v>0)){$('sheetMsg').textContent='Importo non valido.';return;}
+  var q=LS.get('queue')||[];q.push({id:Date.now()+'-'+Math.random().toString(36).slice(2,7),data:new Date().toISOString(),tipo:tipo,importo:Math.round(v*100)/100,desc:$('fDesc').value.trim()});
+  LS.set('queue',q);$('fImp').value='';$('fDesc').value='';render();
+  $('sheetMsg').textContent='Invio a Google Drive…';$('sheetMsg').className='msg';
+  var ok=await flushQueue(true);
+  $('sheetMsg').textContent=ok?'✓ Spesa registrata: la dashboard te la proporrà alla prossima sincronizzazione.':'Salvata sul telefono: verrà inviata al prossimo aggiornamento.';
+  $('sheetMsg').className='msg '+(ok?'ok':'warn');if(ok)setTimeout(closeSheet,1200);
+}
+async function flushQueue(interactive){
+  var q=LS.get('queue')||[];if(!q.length||DEMO)return true;
+  var f=LS.get('files');if(!f||!PWD)return false;
+  try{
+    if(!(await getToken(!!interactive)))return false;
+    var txt=(await driveGet(f.pend)).trim(),list=[];
+    if(txt)list=await decrypt(JSON.parse(txt),PWD);
+    var ids={};list.forEach(function(i){ids[i.id]=1;});q.forEach(function(i){if(!ids[i.id])list.push(i);});
+    await drivePut(f.pend,JSON.stringify(await encrypt(list,PWD)));
+    LS.set('pendRemote',list);LS.set('queue',[]);render();return true;
+  }catch(e){console.warn(e);return false;}
+}
+
+/* ======================= AVVIO ======================= */
+var DEMO_DATA={v:1,asof:new Date().toISOString(),fido:3000,saldoDisp:6200,saldoCont:3200,carte:{addebito:"novembre",base:{speso:980,budget:1200},oro:{speso:150,budget:400}},extra:{mese:"ottobre",budget:400,speso:260,prossimoBudget:400,prossimoDa:"1° novembre"},cond:{anno:2026,pagato:1400,budget:2000},target:{anno:2027,fine:15000,fineT:15000,ultimoScost:null,ultimoMese:null},
+  mesi:[["Ott 26",4200,1200,3500],["Nov 26",2600,-400,1900],["Dic 26",1100,-1900,4300],["Gen 27",4300,1300,3500],["Feb 27",3400,400,2600],["Mar 27",2600,-400,1800],["Apr 27",1700,-1300,900],["Mag 27",900,-2100,10700],["Giu 27",9800,6800,9000],["Lug 27",9000,6000,8100],["Ago 27",8100,5100,18800],["Set 27",18700,15700,17900],["Ott 27",17900,14900,17000],["Nov 27",17000,14000,16200],["Dic 27",15300,12300,15000]]};
+function start(){
+  if(DEMO){D=DEMO_DATA;show('scrMain');render();setFoot('Modalità dimostrativa con dati di esempio.');return;}
+  if(!LS.get('files')){show('scrSetup');return;}
+  var p=LS.get('pwd');
+  if(p){PWD=p;var env=LS.get(cachedEnvKey);show('scrMain');
+    (env?decrypt(env,p).then(function(d){D=d;render();}):Promise.resolve()).catch(function(){LS.del('pwd');show('scrPwd');}).then(function(){refreshData(false);});}
+  else show('scrPwd');
+}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+start();
+</script>
+</body>
+</html>
