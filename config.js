@@ -1,6 +1,6 @@
-/* Configurazione Google (da compilare una sola volta, vedi README.md) */
+/* Configurazione Google (vedi README.md) */
 window.CRUSCOTTO_CONFIG = {
-  CLIENT_ID: "",   // es. 1234567890-abc...apps.googleusercontent.com
-  API_KEY:   "",   // es. AIzaSy...
-  APP_ID:    ""    // numero del progetto Google Cloud, es. 1234567890
+  CLIENT_ID: "993943093168-fkfqges9hcoioputfbfgfchp3dln7amf.apps.googleusercontent.com",
+  API_KEY: "AIzaSyBc8c0i0F5sIagnpodblweTMrDffh4dKq8",
+  APP_ID: "993943093168"
 };
