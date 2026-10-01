@@ -1,7 +1,7 @@
 {
   "name": "Cruscotto Conto",
   "short_name": "Cruscotto",
-  "description": "Andamento del conto rispetto al target, residui carte, extra e contanti",
+  "description": "Tableau de bord: obiettivi 2027, saldi, budget del mese e traiettoria",
   "lang": "it",
   "start_url": "./",
   "scope": "./",

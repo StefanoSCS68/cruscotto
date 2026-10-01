@@ -61,6 +61,54 @@ header h1{font-size:20px;font-weight:700}
 .chk{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-top:12px}
 .foot{font-size:11px;color:var(--muted);text-align:center;margin-top:18px;line-height:1.6}
 .foot a{color:var(--muted)}
+/* ---- tableau de bord v2 ---- */
+:root{--s2:#252840;--plan:#8fb4ff;--warn:#f5a623}
+.hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px}
+.hdr .r{font-size:11px;color:var(--muted)}
+.pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.pill.ok{background:rgba(52,199,138,.16);color:var(--ok)}.pill.warn{background:rgba(245,166,35,.16);color:var(--warn)}.pill.ko{background:rgba(224,82,82,.18);color:var(--ko)}.pill.eq{background:rgba(138,144,168,.18);color:var(--muted)}
+.hero2{border-width:1px}
+.hero2.ok{background:linear-gradient(160deg,#16352b 0%,#181b24 65%);border-color:rgba(52,199,138,.35)}
+.hero2.warn{background:linear-gradient(160deg,#3a2e14 0%,#181b24 65%);border-color:rgba(245,166,35,.4)}
+.hero2.ko{background:linear-gradient(160deg,#3a1818 0%,#181b24 65%);border-color:rgba(224,82,82,.45)}
+.state{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.state h2{font-size:18px}
+.goals{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.goal{background:rgba(15,17,23,.55);border-radius:12px;padding:10px}
+.goal .v{font-size:24px;font-weight:800;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.goal .s,.s{font-size:11px;color:var(--muted);line-height:1.35}
+.meter{position:relative;height:8px;border-radius:4px;background:var(--s2);margin:8px 0 4px}
+.meter i{position:absolute;top:0;bottom:0;border-radius:4px}
+.meter .tick{position:absolute;top:-4px;width:2px;height:16px;background:var(--text);opacity:.85}
+.scale{display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted)}
+.saldi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.saldi .v{font-size:22px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums}
+.strip{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:13px;gap:8px}
+.strip b{font-size:16px}
+.rings{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}
+.ring{position:relative;width:92px;height:92px;margin:0 auto}
+.ring .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .pct{font-size:17px;font-weight:800}
+.ring .sm{font-size:9.5px;color:var(--muted);line-height:1.25}
+.rings .nm{font-size:12px;font-weight:700;margin-top:4px}
+.rings .st{font-size:11px;font-weight:700;margin-top:2px}
+.rings .rs{font-size:10.5px;color:var(--muted);margin-top:1px}
+.chart{position:relative}
+.tt{position:absolute;pointer-events:none;background:#0b0d14;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:11.5px;line-height:1.45;white-space:nowrap;opacity:0;transition:opacity .12s;z-index:5}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--muted);margin-top:6px}
+.legend span{display:flex;align-items:center;gap:5px}
+.sw{width:12px;height:8px;border-radius:2px;display:inline-block}
+.dv{display:grid;grid-template-columns:86px 1fr 62px;align-items:center;gap:8px;font-size:13px;margin:8px 0}
+.dv .bar2{position:relative;height:14px}
+.dv .bar2 .mid{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--muted)}
+.dv .bar2 i{position:absolute;top:0;bottom:0;border-radius:3px}
+.dv .val{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.dvtot{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:8px;margin-top:6px;font-size:11.5px;color:var(--muted)}
+.mesi{display:flex;gap:6px;flex-wrap:wrap}
+.mese{flex:1 1 30%;background:var(--s2);border-radius:10px;padding:8px;border-top:3px solid var(--warn)}
+.mese b{display:block;font-size:12.5px}
+.mese .v{font-size:15px;font-weight:800;color:var(--warn);margin-top:2px;font-variant-numeric:tabular-nums}
+.oldv{border-color:rgba(245,166,35,.45)}
 </style>
 <script src="config.js"></script>
 </head>
@@ -69,8 +117,8 @@ header h1{font-size:20px;font-weight:700}
 <!-- ========== SCHERMATA: COLLEGAMENTO GOOGLE DRIVE ========== -->
 <section class="screen" id="scrSetup"><div class="center">
   <h1 style="font-size:22px">Cruscotto conto</h1>
-  <p>Collega Google Drive e seleziona i due file creati dalla dashboard nella cartella <b>DashboardFinanziario</b>:<br><b>cruscotto.enc.json</b> e <b>spese_in_sospeso.enc.json</b>.</p>
-  <p style="font-size:12px">L'app può accedere solo ai file che selezioni.</p>
+  <p>Collega Google Drive e seleziona la cartella <b>DashboardFinanziario</b> in cui la dashboard salva i dati cifrati.</p>
+  <p style="font-size:12px">L'app legge solo i file di quella cartella e scrive solo il proprio file delle spese.</p>
   <button class="btn" id="btnSetup" onclick="setupDrive()">Collega Google Drive</button>
   <div class="msg ko" id="setupMsg"></div>
 </div></section>
@@ -85,57 +133,14 @@ header h1{font-size:20px;font-weight:700}
   <div class="msg ko" id="pwdMsg"></div>
 </div></section>
 
-<!-- ========== SCHERMATA: CRUSCOTTO ========== -->
+<!-- ========== SCHERMATA: CRUSCOTTO (tableau de bord v2) ========== -->
 <section class="screen" id="scrMain">
 <header>
-  <h1>Cruscotto conto</h1>
+  <h1>📊 Cruscotto</h1>
   <div class="sync">Dati dashboard del<br><b id="asof"></b><br><button class="refresh" onclick="refreshData(true)">↻ Aggiorna</button></div>
 </header>
-
-<section class="card">
-  <div class="status"><div class="dot" id="semDot"></div><div><h2 id="semTitle"></h2><div class="sub" id="semSub"></div></div></div>
-  <div style="margin-top:12px">
-    <div class="kv"><span id="kFineL">Saldo contabile fine anno (proiettato)<small id="kFineT"></small></span><span id="kFine"></span></div>
-    <div class="kv"><span>Minimo saldo disponibile<small id="kMinM"></small></span><span id="kMin"></span></div>
-    <div class="kv"><span>Scostamento saldo contabile vs target<small id="kScostM">ultimo mese chiuso</small></span><span id="kScost"></span></div>
-  </div>
-</section>
-
-<section class="card">
-  <div class="row">
-    <div><div class="lbl">Saldo disponibile</div><div class="mid" id="sDisp"></div><div class="sub" id="sFido"></div></div>
-    <div><div class="lbl">Saldo contabile</div><div class="mid" id="sCont"></div><div class="sub">senza fido</div></div>
-  </div>
-</section>
-
-<section class="card hero">
-  <div class="lbl">Carte: puoi ancora spendere</div>
-  <div class="big" id="cResTot"></div>
-  <div class="sub" id="cSub"></div>
-  <div class="cardline"><div class="top"><span>Carta Base</span><b id="cB"></b></div><div class="bar"><i id="cBbar"></i></div><div class="sub" id="cBres"></div></div>
-  <div class="cardline"><div class="top"><span>Carta Oro</span><b id="cO"></b></div><div class="bar"><i id="cObar"></i></div><div class="sub" id="cOres"></div></div>
-</section>
-
-<section class="card">
-  <div class="lbl">Contanti ed extra: prelevabile ora</div>
-  <div class="big" id="xPrel"></div>
-  <div class="bar"><i id="xBar"></i></div>
-  <div class="sub" id="xSub"></div>
-  <div class="note" id="xNote"></div>
-</section>
-
-<section class="card">
-  <div class="lbl" id="kCondL">Condominio (extra)</div>
-  <div class="row" style="align-items:flex-end"><div><div class="mid" id="kCond"></div></div><div style="text-align:right"><div class="sub" id="kCondRes"></div></div></div>
-  <div class="bar"><i id="kCondBar"></i></div>
-</section>
-
-<section class="card">
-  <div class="lbl">Minimo saldo disponibile per mese</div>
-  <div class="sub">prima dell'accredito dello stipendio · linea rossa = fido esaurito</div>
-  <div id="chart" style="margin-top:10px"></div>
-</section>
-
+<div class="sub" id="hstat" style="text-align:right;min-height:14px"></div>
+<div id="tb"></div>
 <div class="pend" id="pendInfo"></div>
 <div class="foot" id="foot"></div>
 <button class="fab" onclick="openSheet()" aria-label="Registra spesa">+</button>
@@ -171,7 +176,7 @@ async function encrypt(obj,pwd){var salt=crypto.getRandomValues(new Uint8Array(1
 async function decrypt(env,pwd){var key=await deriveKey(pwd,unb64(env.salt),env.iter||250000);var pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(env.iv)},key,unb64(env.ct));return JSON.parse(new TextDecoder().decode(pt));}
 
 /* ======================= GOOGLE (accesso solo ai file selezionati: drive.file) ======================= */
-var SCOPE='https://www.googleapis.com/auth/drive.file',tokenClient=null,token=null,tokenExp=0,_tokWait=null;
+var SCOPE='https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file',SCOPEV='2',tokenClient=null,token=null,tokenExp=0,_tokWait=null;
 function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error('Impossibile caricare '+src));};document.head.appendChild(s);});}
 async function ensureGis(){if(!window.google||!google.accounts)await loadScript('https://accounts.google.com/gsi/client');}
 async function getToken(interactive){
@@ -185,26 +190,37 @@ async function getToken(interactive){
       if(r.error){rej(new Error(r.error));return;}
       token=r.access_token;tokenExp=Date.now()+(+r.expires_in||3600)*1000;try{sessionStorage.setItem('cc_tok',JSON.stringify({t:token,exp:tokenExp}));}catch(e){}res(token);
     },error_callback:function(e){rej(new Error(e&&e.type||'accesso annullato'));}});
-    tokenClient.requestAccessToken({prompt:LS.get('consented')?'':'consent'});
+    tokenClient.requestAccessToken({prompt:LS.get('consented')===SCOPEV?'':'consent'});
   });
 }
 async function driveGet(id){var t=await getToken(true);var r=await fetch('https://www.googleapis.com/drive/v3/files/'+id+'?alt=media',{headers:{Authorization:'Bearer '+t}});if(!r.ok)throw new Error('Lettura Drive: '+r.status);return r.text();}
 async function drivePut(id,text){var t=await getToken(true);var r=await fetch('https://www.googleapis.com/upload/drive/v3/files/'+id+'?uploadType=media',{method:'PATCH',headers:{Authorization:'Bearer '+t,'Content-Type':'application/json'},body:text});if(!r.ok)throw new Error('Scrittura Drive: '+r.status);}
+var SUMNAME='cruscotto.enc.json',PENDNAME='spese_app.enc.json';
+async function driveFind(name){
+  var t=await getToken(true),fo=LS.get('folder');
+  var q="name='"+name+"' and '"+fo.id+"' in parents and trashed=false";
+  var r=await fetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&orderBy=modifiedTime%20desc&pageSize=5&fields=files(id,name,modifiedTime)',{headers:{Authorization:'Bearer '+t}});
+  if(!r.ok)throw new Error('Ricerca su Drive: '+r.status);var j=await r.json();return (j.files&&j.files[0])?j.files[0].id:null;
+}
+async function driveCreate(name,text){
+  var t=await getToken(true),fo=LS.get('folder'),b='cc'+Date.now();
+  var body='--'+b+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify({name:name,parents:[fo.id],mimeType:'application/json'})+'\r\n--'+b+'\r\nContent-Type: application/json\r\n\r\n'+text+'\r\n--'+b+'--';
+  var r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{method:'POST',headers:{Authorization:'Bearer '+t,'Content-Type':'multipart/related; boundary='+b},body:body});
+  if(!r.ok)throw new Error('Creazione file su Drive: '+r.status);return (await r.json()).id;
+}
 async function setupDrive(){
   $('setupMsg').textContent='';
   try{
     if(!CFG.CLIENT_ID||!CFG.API_KEY||!CFG.APP_ID)throw new Error('Configurazione Google mancante in config.js (vedi README).');
-    var t=await getToken(true);LS.set('consented',true);
+    var t=await getToken(true);LS.set('consented',SCOPEV);
     await loadScript('https://apis.google.com/js/api.js');
     await new Promise(function(res){gapi.load('picker',res);});
-    var view=new google.picker.DocsView(google.picker.ViewId.DOCS).setMode(google.picker.DocsViewMode.LIST).setQuery('enc.json');
-    var picker=new google.picker.PickerBuilder().addView(view).enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
-      .setOAuthToken(t).setDeveloperKey(CFG.API_KEY).setAppId(CFG.APP_ID).setLocale('it').setTitle('Seleziona i 2 file .enc.json')
+    var view=new google.picker.DocsView(google.picker.ViewId.FOLDERS).setIncludeFolders(true).setSelectFolderEnabled(true).setMimeTypes('application/vnd.google-apps.folder').setQuery('DashboardFinanziario');
+    var picker=new google.picker.PickerBuilder().addView(view)
+      .setOAuthToken(t).setDeveloperKey(CFG.API_KEY).setAppId(CFG.APP_ID).setLocale('it').setTitle('Seleziona la cartella DashboardFinanziario')
       .setCallback(function(d){
-        if(d.action!==google.picker.Action.PICKED)return;
-        var fp=LS.get('fpart')||{};(d.docs||[]).forEach(function(f){if(/^cruscotto/i.test(f.name))fp.sum=f.id;if(/^spese_in_sospeso/i.test(f.name))fp.pend=f.id;});
-        if(!fp.sum||!fp.pend){LS.set('fpart',fp);$('setupMsg').className='msg warn';$('setupMsg').textContent='✓ '+(fp.sum?'cruscotto.enc.json':'spese_in_sospeso.enc.json')+' selezionato. Tocca di nuovo il pulsante e seleziona '+(fp.sum?'spese_in_sospeso.enc.json':'cruscotto.enc.json')+'.';$('btnSetup').textContent='Seleziona il secondo file';return;}
-        LS.set('files',{sum:fp.sum,pend:fp.pend});LS.del('fpart');start();
+        if(d.action!==google.picker.Action.PICKED||!d.docs||!d.docs[0])return;
+        LS.set('folder',{id:d.docs[0].id,name:d.docs[0].name});['files','fpart','pendRemote'].forEach(LS.del);start();
       }).build();
     picker.setVisible(true);
   }catch(e){$('setupMsg').textContent=e.message;}
@@ -223,75 +239,164 @@ async function unlock(){
 }
 async function refreshData(interactive){
   if(DEMO)return;
-  var f=LS.get('files');if(!f){show('scrSetup');return;}
+  if(!LS.get('folder')){show('scrSetup');return;}
   var tok=await getToken(false);if(!tok&&!interactive){setFoot('Tocca “↻ Aggiorna” per scaricare i dati più recenti.');return;}
   try{
-    setFoot('Aggiornamento in corso…');
-    var txt=await driveGet(f.sum),env=JSON.parse(txt),d=await decrypt(env,PWD);
-    LS.set(cachedEnvKey,env);D=d;
-    try{var pt=(await driveGet(f.pend)).trim();LS.set('pendRemote',pt?await decrypt(JSON.parse(pt),PWD):[]);}catch(e){}
-    render();setFoot('Dati aggiornati da Google Drive.');
-    flushQueue();
-  }catch(e){setFoot('Aggiornamento non riuscito: '+e.message+'. Mostro gli ultimi dati salvati.');}
+    setFoot('⏳ Aggiornamento in corso…');
+    var sid=await driveFind(SUMNAME);if(!sid)throw new Error('file '+SUMNAME+' non trovato nella cartella '+LS.get('folder').name);
+    var env=JSON.parse(await driveGet(sid)),d=await decrypt(env,PWD);
+    LS.set(cachedEnvKey,env);D=d;render();
+    await syncPending(false);
+    var dt=new Date();setFoot('✓ Dati aggiornati alle '+dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+'.');
+  }catch(e){setFoot('⚠️ Aggiornamento non riuscito: '+e.message+'. Mostro gli ultimi dati salvati.');}
 }
-function setFoot(t){$('foot').innerHTML=t+'<br><a href="#" onclick="resetApp();return false">Scollega / reimposta</a>';}
-function resetApp(){if(!confirm('Scollegare Google Drive e cancellare i dati salvati su questo telefono?'))return;['files','env','pwd','queue','consented','pendRemote','fpart'].forEach(LS.del);try{sessionStorage.clear();}catch(e){}location.reload();}
+/* file spese: scritto SOLO dall'app; le spese già importate dalla dashboard (importedIds) vengono tolte */
+async function syncPending(interactive){
+  if(!(await getToken(!!interactive)))return false;
+  var q=LS.get('queue')||[],imp={},list=[],pid=await driveFind(PENDNAME);
+  ((D&&D.importedIds)||[]).forEach(function(i){imp[i]=1;});
+  if(pid){var txt=(await driveGet(pid)).trim();if(txt)list=await decrypt(JSON.parse(txt),PWD);}
+  var before=JSON.stringify(list),ids={};
+  list=list.filter(function(i){return !imp[i.id];});list.forEach(function(i){ids[i.id]=1;});
+  q.forEach(function(i){if(!ids[i.id]&&!imp[i.id])list.push(i);});
+  if(JSON.stringify(list)!==before||!pid){var enc=JSON.stringify(await encrypt(list,PWD));if(pid)await drivePut(pid,enc);else await driveCreate(PENDNAME,enc);}
+  LS.set('pendRemote',list);LS.set('queue',[]);render();return true;
+}
+function setFoot(t){var h=$('hstat');if(h)h.textContent=t;$('foot').innerHTML=t+'<br><a href="#" onclick="resetApp();return false">Scollega / reimposta</a>';}
+function resetApp(){if(!confirm('Scollegare Google Drive e cancellare i dati salvati su questo telefono?'))return;['files','folder','env','pwd','queue','consented','pendRemote','fpart'].forEach(LS.del);try{sessionStorage.clear();}catch(e){}location.reload();}
 
-/* ======================= RENDER ======================= */
+/* ======================= RENDER — tableau de bord v2 ======================= */
+var MESI_N=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+var COL={ok:'#34c78a',warn:'#f5a623',ko:'#e05252',acc:'#4f8ef7',plan:'#8fb4ff',muted:'#8a90a8',s2:'#252840',text:'#e8eaf2'};
+function E(v){if(v==null||isNaN(v))return '—';v=Math.round(v);return (v<0?'−':'')+'€'+Math.abs(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function E2(v){return (v<0?'−':'')+'€'+Math.abs(v).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function S(v){v=Math.round(v);return (v>=0?'+':'−')+E(Math.abs(v)).slice(0);}
+function lblM(ym,long){var m=+ym.slice(5,7)-1;return long?MESI_N[m].toLowerCase()+' '+ym.slice(2,4):MESI_N[m]+' '+ym.slice(2,4);}
+function shiftYM(ym,k){var y=+ym.slice(0,4),m=+ym.slice(5,7)+k;while(m>12){m-=12;y++;}while(m<1){m+=12;y--;}return y+'-'+('0'+m).slice(-2);}
+function stato3(sp,bu,g,gg){if(bu==null)return {k:'eq',t:'budget n/d'};if(sp>bu)return {k:'ko',t:'⚠ sforato'};if(sp>bu*g/gg*1.1)return {k:'warn',t:'▲ sopra il ritmo'};return {k:'ok',t:'✓ in linea'};}
+
 function render(){
   if(!D)return;
-  var fido=D.fido||0,mesi=D.mesi||[],minM=mesi.length?mesi.reduce(function(a,b){return b[1]<a[1]?b:a;}):['—',0,0,0];
-  var q=LS.get('queue')||[],pr=LS.get('pendRemote')||[],seen={},adj={extra:0,base:0,oro:0};q.concat(pr).forEach(function(i){if(seen[i.id])return;seen[i.id]=1;adj[i.tipo]=(adj[i.tipo]||0)+(+i.importo||0);});
-  var cB=D.carte.base,cO=D.carte.oro,spB=cB.speso+adj.base,spO=cO.speso+adj.oro,spX=D.extra.speso+adj.extra;
   var dt=new Date(D.asof);$('asof').textContent=dt.toLocaleDateString('it-IT')+' '+dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
   var old=(Date.now()-dt.getTime())>3*86400000;$('asof').className=old?'warn':'ok';
-  // la previsione include già: extra del mese = max(budget, speso registrato); carte = budget di addebito
-  var minEff=minM[1]-Math.max(0,spX-Math.max(D.extra.budget,D.extra.speso))-Math.max(0,spB-cB.budget)-Math.max(0,spO-cO.budget);
-  var t=D.target,sem=minEff<0?'ko':((minEff<500||(t.fineT!==null&&t.fine<t.fineT-500))?'warn':'ok');
-  var dot=$('semDot');dot.className='dot '+sem;dot.textContent=sem==='ok'?'✓':(sem==='warn'?'!':'✕');
-  $('semTitle').textContent=sem==='ok'?'In linea con il target':(sem==='warn'?'Attenzione: margine ridotto':'Fuori target');
-  $('semSub').textContent=sem==='ok'?'Saldo disponibile mai sotto zero nel periodo previsto':(sem==='warn'?'Il margine sul fido si sta assottigliando':'Previsto utilizzo oltre il fido');
-  $('kFineL').firstChild.textContent='Saldo contabile fine '+t.anno+' (proiettato)';
-  $('kFine').innerHTML='<span class="'+(t.fineT===null||t.fine>=t.fineT?'ok':'ko')+'">'+eur(t.fine)+'</span>';
-  $('kFineT').textContent=t.fineT===null?'nessun target fissato':'target '+eur(t.fineT);
-  $('kMin').innerHTML='<span class="'+col(minEff,500)+'">'+eur(minEff)+'</span>';
-  $('kMinM').textContent=minM[0]+', prima del 27 · contabile '+eur(minEff-fido);
-  $('kScost').innerHTML=t.ultimoScost===null?'<span style="color:var(--muted)">n.d.</span>':'<span class="'+(t.ultimoScost>=0?'ok':'ko')+'">'+(t.ultimoScost>=0?'+':'')+eur(t.ultimoScost)+'</span>';
-  $('kScostM').textContent=t.ultimoScost===null?'disponibile dal primo mese chiuso dell\'anno target':'a fine '+t.ultimoMese;
+  var tb=$('tb');
+  if(!D.v||D.v<2){tb.innerHTML='<section class="card oldv"><div class="lbl">Aggiornamento necessario</div><p class="s" style="font-size:13px;margin-top:6px">I dati ricevuti sono nel formato precedente. Apri la dashboard sul Mac e premi <b>📱</b> accanto al dischetto: l\'app riceverà il nuovo tableau.</p></section>';$('pendInfo').textContent='';return;}
+
+  // spese registrate dal telefono non ancora importate nella dashboard: già conteggiate qui
+  var q=LS.get('queue')||[],pr=LS.get('pendRemote')||[],seen={},adj={extra:0,base:0,oro:0},nAdj=0;
+  q.concat(pr).forEach(function(i){if(seen[i.id])return;seen[i.id]=1;nAdj++;adj[i.tipo]=(adj[i.tipo]||0)+(+i.importo||0);});
+  var X=D.extra,K=D.carte,O=D.obiettivi,FIDO=D.fido||3000;
+  var spX=X.speso+adj.extra,spB=K.base.speso+adj.base,spO=K.oro.speso+adj.oro;
+  var dX=Math.max(0,spX-Math.max(X.budget||0,X.speso));                                   // extra oltre budget non ancora in previsione
+  var dC=(Math.max(0,spB-(K.base.budget||0))-Math.max(0,K.base.speso-(K.base.budget||0)))+(Math.max(0,spO-(K.oro.budget||0))-Math.max(0,K.oro.speso-(K.oro.budget||0)));
+  var ymAdd=shiftYM(K.mese,2);
+  var mesi=D.mesi.map(function(m){var d=dX+(m.ym>=ymAdd?dC:0);return {ym:m.ym,pMin:m.pMin,pFine:m.pFine,min:m.min==null?null:m.min-d,fine:m.fine==null?null:m.fine-d};});
+  var minM=null;mesi.forEach(function(m){if(m.min!=null&&(!minM||m.min<minM.min))minM=m;});
+  var fm=function(ym){for(var i=0;i<mesi.length;i++)if(mesi[i].ym===ym)return mesi[i];return {};};
+  var f26=fm('2026-12').fine,f27=fm('2027-12').fine,marg=minM?minM.min+FIDO:null,dA=(f26!=null&&f27!=null)?f27-f26:null;
+  var st=(marg!=null&&marg<0)||(dA!=null&&dA<=0)?'ko':((minM&&minM.min<O.soglia)||mesi.some(function(m){return m.min!=null&&m.min<m.pMin-100;}))?'warn':'ok';
   var sd=D.saldoDisp-adj.extra,sc=D.saldoCont-adj.extra;
-  $('sDisp').innerHTML='<span class="'+col(sd,1000)+'">'+eur(sd,1)+'</span>';$('sFido').textContent='incluso fido '+eur(fido);
-  $('sCont').innerHTML='<span class="'+(sc>=0?'ok':'ko')+'">'+eur(sc,1)+'</span>';
-  var rB=Math.max(0,cB.budget-spB),rO=Math.max(0,cO.budget-spO);
-  $('cResTot').innerHTML='<span class="'+((rB+rO)>0?'ok':'ko')+'">'+eur(rB+rO)+'</span>';
-  $('cSub').textContent='fino alla chiusura, con addebito a '+D.carte.addebito;
-  function cardBar(k,budget,sp,res){var pct=budget>0?Math.min(100,sp/budget*100):100;$(k).textContent=eur(sp)+' / '+eur(budget);
-    var b=$(k+'bar');b.style.width=pct+'%';b.style.background=pct>=100?'var(--ko)':(pct>=85?'var(--warn)':'var(--ok)');
-    $(k+'res').innerHTML=res>0?'residuo <b class="'+(pct>=85?'warn':'ok')+'">'+eur(res)+'</b>':'<b class="ko">budget superato di '+eur(sp-budget)+'</b>';}
-  cardBar('cB',cB.budget,spB,rB);cardBar('cO',cO.budget,spO,rO);
-  var xRes=D.extra.budget-spX,xPrel=Math.max(0,Math.min(xRes,minEff));
-  $('xPrel').innerHTML='<span class="'+(xPrel>0?'ok':'ko')+'">'+eur(xPrel)+'</span>';
-  var xPct=D.extra.budget>0?Math.min(100,spX/D.extra.budget*100):100;$('xBar').style.width=xPct+'%';$('xBar').style.background=xPct>=100?'var(--ko)':(xPct>=85?'var(--warn)':'var(--ok)');
-  $('xSub').textContent='Extra di '+D.extra.mese+': '+eur(spX)+' su budget '+eur(D.extra.budget);
-  $('xNote').innerHTML=xRes<0?'Budget del mese superato di <b class="ko">'+eur(-xRes)+'</b>: ogni ulteriore prelievo riduce di pari importo il margine sul fido ('+eur(minEff)+' a '+minM[0]+'). Dal '+D.extra.prossimoDa+' torni ad avere '+eur(D.extra.prossimoBudget)+'.'
-    :'Prelevabile = budget extra residuo del mese, entro il margine sul fido ('+eur(minEff)+' a '+minM[0]+').';
-  var cRes=D.cond.budget-D.cond.pagato,cPct=D.cond.budget>0?Math.min(100,D.cond.pagato/D.cond.budget*100):0;
-  $('kCondL').textContent='Condominio '+D.cond.anno+' (extra)';$('kCond').textContent=eur(D.cond.pagato)+' / '+eur(D.cond.budget);
-  $('kCondRes').innerHTML=cRes>=0?'residuo <b>'+eur(cRes)+'</b>':'<b class="ko">oltre di '+eur(-cRes)+'</b>';
-  $('kCondBar').style.width=cPct+'%';$('kCondBar').style.background=cRes<0?'var(--ko)':'var(--acc)';
-  chart(mesi,minM,fido);
-  $('pendInfo').textContent=(q.length?('⏳ '+q.length+' spese annotate non ancora inviate a Google Drive. '):'')+(pr.length?('📥 '+pr.length+' spese inviate, in attesa di importazione nella dashboard (già conteggiate qui).'):'');
+  var mm=fm(D.meseMin.ym),mmPrev=mm.min!=null?mm.min:D.meseMin.prev,mmD=D.meseMin.piano!=null?mmPrev-D.meseMin.piano:null;
+  var h='';
+
+  // ① ESITO OBIETTIVI
+  var tit={ok:'Obiettivi 2027 in linea',warn:'Obiettivi 2027: attenzione',ko:'Obiettivi 2027 a rischio'}[st];
+  var ic={ok:'✓',warn:'!',ko:'✕'}[st];
+  var mCol=marg==null?COL.muted:(marg<0?COL.ko:(minM.min<O.soglia?COL.warn:COL.ok));
+  var mW=minM?Math.max(0,Math.min(100,(minM.min+FIDO)/(2*FIDO)*100)):0;
+  var aCol=dA==null?COL.muted:(dA>0?COL.ok:COL.ko),aMax=Math.max(f26||0,f27||0,1),aP=f26!=null?Math.max(0,Math.min(100,Math.min(f26,f27)/aMax*100)):0;
+  h+='<section class="card hero2 '+st+'"><div class="state"><div class="dot '+st+'">'+ic+'</div><div><h2>'+tit+'</h2><div class="s">se rispetti budget carte, extra e Piano Mensile</div></div></div><div class="goals">'+
+    '<div class="goal"><div class="lbl">Margine sul fido</div><div class="v" style="color:'+mCol+'">'+E(marg)+'</div>'+
+      '<div class="meter"><i style="left:0;width:'+mW+'%;background:'+mCol+'"></i><span class="tick" style="left:50%;opacity:.35"></span></div>'+
+      '<div class="scale"><span>−€3.000</span><span>€0</span><span>+€3.000</span></div>'+
+      '<div class="s" style="margin-top:3px">Minimo previsto <b style="color:'+(minM&&minM.min<0?COL.warn:COL.text)+'">'+(minM?E(minM.min):'—')+'</b>'+(minM?' ('+lblM(minM.ym,true)+')':'')+' · saldo contabile</div></div>'+
+    '<div class="goal"><div class="lbl">Fine 2027 vs fine 2026</div><div class="v" style="color:'+aCol+'">'+(dA==null?'—':S(dA))+'</div>'+
+      '<div class="meter"><i style="left:0;width:'+aP+'%;background:rgba(138,144,168,.45);border-radius:4px 0 0 4px"></i><i style="left:'+aP+'%;width:'+(100-aP)+'%;background:'+aCol+';border-radius:0 4px 4px 0"></i><span class="tick" style="left:'+aP+'%"></span></div>'+
+      '<div class="scale"><span>fine 2026 '+E(f26)+'</span><span>'+E(f27)+'</span></div>'+
+      '<div class="s" style="margin-top:3px">Saldo contabile a fine anno · piano '+E(O.pFine26)+' → '+E(O.pFine27)+'</div></div>'+
+  '</div></section>';
+
+  // ② SALDI OGGI
+  var pk=mmD==null?'eq':(mmD>=0?'ok':(mmD>-100?'eq':'ko'));
+  h+='<section class="card"><div class="hdr"><span class="lbl">Saldi oggi</span></div><div class="saldi">'+
+    '<div><div class="s">Saldo disponibile</div><div class="v" style="color:'+(sd<0?COL.ko:COL.text)+'">'+E(sd)+'</div><div class="s">incluso fido '+E(FIDO)+'</div></div>'+
+    '<div><div class="s">Saldo contabile</div><div class="v" style="color:'+(sc<0?COL.warn:COL.text)+'">'+E(sc)+'</div><div class="s">senza fido</div></div></div>'+
+    '<div class="strip"><span>Min 26 '+lblM(D.meseMin.ym,true).split(' ')[0]+' previsto<br><span class="s">saldo contabile · piano '+E(D.meseMin.piano)+'</span></span><span style="text-align:right"><b style="color:'+(mmPrev<0?COL.warn:COL.text)+'">'+E(mmPrev)+'</b><br>'+(mmD==null?'':'<span class="pill '+pk+'" style="font-size:10px">'+S(mmD)+' vs piano</span>')+'</span></div></section>';
+
+  // ③ BUDGET DEL MESE
+  var cg=K.aperto?K.gg:K.giorno;
+  var R=[
+    {nm:'CdC Base',sub:'spesa '+lblM(K.mese,true).split(' ')[0]+(K.aperto?' · aperto':''),sp:spB,bu:K.base.budget,g:cg,gg:K.gg},
+    {nm:'CdC Oro',sub:'spesa '+lblM(K.mese,true).split(' ')[0]+(K.aperto?' · aperto':''),sp:spO,bu:K.oro.budget,g:cg,gg:K.gg},
+    {nm:'Extra',sub:lblM(X.mese,true).split(' ')[0]+' (lordo)',sp:spX,bu:X.budget,g:X.giorno,gg:X.gg}];
+  var rh='';
+  R.forEach(function(r){
+    var s=stato3(r.sp,r.bu,r.g,r.gg),c=COL[s.k]||COL.muted,p=r.bu?r.sp/r.bu:0,pc=Math.min(p,1),rr=36,cf=2*Math.PI*rr,a=Math.min(1,r.g/r.gg)*2*Math.PI-Math.PI/2;
+    var x1=46+Math.cos(a)*(rr-9),y1=46+Math.sin(a)*(rr-9),x2=46+Math.cos(a)*(rr+9),y2=46+Math.sin(a)*(rr+9),res=r.bu!=null?r.bu-r.sp:null,rest=Math.max(1,r.gg-r.g+1);
+    var rs=res==null?'':(res<0?'oltre di '+E(-res):(r.g>=r.gg?'residuo '+E(res):'residuo '+E(res)+' · '+E(res/rest)+'/g'));
+    rh+='<div><div class="ring"><svg width="92" height="92" viewBox="0 0 92 92"><circle cx="46" cy="46" r="'+rr+'" fill="none" stroke="'+COL.s2+'" stroke-width="9"/>'+
+      (pc>0?'<circle cx="46" cy="46" r="'+rr+'" fill="none" stroke="'+c+'" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+(cf*pc)+' '+cf+'" transform="rotate(-90 46 46)"/>':'')+
+      '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+COL.text+'" stroke-width="2" opacity=".85"/></svg>'+
+      '<div class="c"><div class="pct">'+Math.round(p*100)+'%</div><div class="sm">'+E(r.sp)+'<br>/ '+E(r.bu)+'</div></div></div>'+
+      '<div class="nm">'+r.nm+'</div><div class="s" style="font-size:10px">'+r.sub+'</div><div class="st" style="color:'+c+'">'+s.t+'</div><div class="rs">'+rs+'</div></div>';
+  });
+  h+='<section class="card"><div class="hdr"><span class="lbl">Budget del mese</span><span class="r">giorno '+X.giorno+' di '+X.gg+'</span></div><div class="rings">'+rh+'</div>'+
+    (K.aperto?'<div class="s" style="margin-top:8px;text-align:center">Carte: mese di '+lblM(K.mese,true).split(' ')[0]+' ancora aperto in dashboard (addebito '+K.addebito+')</div>':'')+'</section>';
+
+  // ④ TRAIETTORIA
+  h+='<section class="card"><div class="hdr"><span class="lbl">Traiettoria · min 26 del mese</span><span class="r">saldo contabile</span></div><div class="chart" id="chart"><div class="tt" id="tt"></div></div>'+
+    '<div class="legend"><span><i class="sw" style="background:'+COL.acc+'"></i>previsione</span><span><i class="sw" style="background:'+COL.warn+'"></i>sotto zero</span><span><i class="sw" style="background:'+COL.plan+';height:2px"></i>piano</span><span><i class="sw" style="background:'+COL.ko+';height:2px"></i>limite fido</span></div></section>';
+
+  // ⑤ ULTIMO MESE CHIUSO
+  var C=D.chiuso,dv=[],tot=0;
+  [['Carte Base',C.base,true],['Carte Oro',C.oro,true],['Extra',C.extra,false]].forEach(function(x){var o=x[1];if(!o||o.v==null||o.b==null)return;var d=o.v-o.b;tot+=d;dv.push({n:x[0],d:d,t:E(o.v)+' / '+E(o.b)+(x[2]&&!o.def?' · p':'')});});
+  var mx=Math.max(100,Math.max.apply(null,dv.map(function(x){return Math.abs(x.d);}))),dh='';
+  dv.forEach(function(x){var w=Math.min(50,Math.abs(x.d)/mx*50),c=x.d>0?COL.ko:COL.ok;
+    dh+='<div class="dv"><span>'+x.n+'<br><span class="s" style="font-size:10px">'+x.t+'</span></span><div class="bar2"><div class="mid"></div><i style="'+(x.d>0?'left:50%':'right:50%')+';width:'+Math.max(w,1)+'%;background:'+c+'"></i></div><span class="val" style="color:'+c+'">'+S(x.d)+'</span></div>';});
+  h+='<section class="card"><div class="hdr"><span class="lbl">Ultimo mese chiuso · '+lblM(C.ym)+'</span><span class="pill '+(tot>0?'warn':'ok')+'">'+S(tot)+' vs budget</span></div>'+dh+
+    '<div class="dvtot"><span>← sotto budget (meglio)</span><span>sopra budget (peggio) →</span></div>'+(dv.some(function(x){return /· p/.test(x.t);})?'<div class="s" style="margin-top:6px">p = carte provvisorio, definitivo con l\'addebito del 5</div>':'')+'</section>';
+
+  // ⑥ MESI DA PRESIDIARE
+  var neg=mesi.filter(function(m){return m.min!=null&&m.min<0;}),mh='';
+  neg.forEach(function(m){var mg=m.min+FIDO,c=mg<0?COL.ko:(m.min<O.soglia?COL.ko:COL.warn);mh+='<div class="mese" style="border-top-color:'+c+'"><b>'+lblM(m.ym)+'</b><div class="v" style="color:'+c+'">'+E(m.min)+'</div><div class="s">margine fido '+E(mg)+'</div></div>';});
+  h+='<section class="card"><div class="hdr"><span class="lbl">Mesi con saldo contabile negativo</span></div>'+(neg.length?'<div class="mesi">'+mh+'</div>':'<div class="s" style="font-size:13px;color:'+COL.ok+'">✓ Nessun mese con saldo contabile negativo</div>')+'</section>';
+
+  tb.innerHTML=h;
+  chart(mesi,FIDO,D.oggi.ym);
+  $('pendInfo').textContent=nAdj?('📱 '+nAdj+' spese registrate dal telefono, già conteggiate qui; saranno importate premendo 📱 nella dashboard.'+(q.length?' ('+q.length+' non ancora inviate a Google Drive)':'')):'';
 }
-function chart(mesi,minM,fido){
-  if(!mesi.length){$('chart').innerHTML='';return;}
-  var W=440,H=170,pad=26,n=mesi.length,vals=mesi.map(function(m){return m[1];}),max=Math.max.apply(null,vals.concat([1000])),min=Math.min(-fido*0.2,Math.min.apply(null,vals));
-  var y=function(v){return pad+(max-v)/(max-min)*(H-pad*2);},bw=(W-20)/n,s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Minimo saldo disponibile per mese">';
-  s+='<line x1="10" x2="'+(W-10)+'" y1="'+y(0)+'" y2="'+y(0)+'" stroke="#e05252" stroke-width="1.5" stroke-dasharray="4 3"/>';
-  var step=Math.ceil(n/5);
-  mesi.forEach(function(m,i){var v=m[1],x=10+i*bw+2,y0=y(0),yv=y(v),h=Math.abs(y0-yv),c=v<0?'#e05252':(v<1500?'#f5b423':'#34c78a');
-    s+='<rect x="'+x+'" y="'+Math.min(y0,yv)+'" width="'+(bw-4)+'" height="'+Math.max(1,h)+'" rx="3" fill="'+c+'" opacity="'+(m===minM?1:.7)+'"><title>'+m[0]+': disponibile '+eur(v)+' · contabile '+eur(m[2])+'</title></rect>';
-    if(i%step===0)s+='<text x="'+(x+(bw-4)/2)+'" y="'+(H-6)+'" font-size="10" fill="#8a90a8" text-anchor="middle">'+m[0]+'</text>';
-    if(m===minM)s+='<text x="'+(x+(bw-4)/2)+'" y="'+(yv-5)+'" font-size="10" fill="#f5b423" text-anchor="middle" font-weight="700">'+eur(v)+'</text>';});
-  $('chart').innerHTML=s+'</svg>';
+
+function chart(mesi,FIDO,ymNow){
+  var el=$('chart');if(!el||!mesi.length)return;
+  var vals=[];mesi.forEach(function(m){if(m.min!=null)vals.push(m.min);vals.push(m.pMin);});
+  var vmax=Math.ceil((Math.max.apply(null,vals.concat([3000]))+500)/3000)*3000,vmin=Math.min(-FIDO-1000,Math.floor((Math.min.apply(null,vals)-500)/1000)*1000);
+  var W=360,H=200,L=34,Rr=4,T=10,B=24,n=mesi.length,bw=(W-L-Rr)/n;
+  function y(v){return T+(vmax-v)/(vmax-vmin)*(H-T-B);}
+  var s='<svg width="100%" viewBox="0 0 '+W+' '+H+'" style="display:block" role="img" aria-label="Minimo del mese previsto e piano">';
+  for(var g=Math.ceil(vmin/3000)*3000;g<=vmax;g+=3000){s+='<line x1="'+L+'" x2="'+(W-Rr)+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="'+(g===0?'#4a4f70':'#23263a')+'"/><text x="'+(L-4)+'" y="'+(y(g)+3)+'" fill="'+COL.muted+'" font-size="8.5" text-anchor="end">'+(g===0?'0':(g/1000)+'k')+'</text>';}
+  s+='<line x1="'+L+'" x2="'+(W-Rr)+'" y1="'+y(-FIDO)+'" y2="'+y(-FIDO)+'" stroke="'+COL.ko+'" stroke-width="1.5" stroke-dasharray="4 3"/><text x="'+(W-Rr)+'" y="'+(y(-FIDO)+11)+'" fill="'+COL.ko+'" font-size="8.5" text-anchor="end">fido −'+E(FIDO).slice(1)+'</text>';
+  var lo=null,hi=null;
+  mesi.forEach(function(m,i){
+    var x=L+i*bw+2,w=bw-4,cur=m.ym===ymNow;
+    if(m.min!=null){var y0=y(0),y1=y(m.min),top=Math.min(y0,y1),hh=Math.max(2,Math.abs(y1-y0));
+      s+='<rect x="'+x+'" y="'+top+'" width="'+w+'" height="'+hh+'" rx="3" fill="'+(m.min<0?COL.warn:COL.acc)+'" opacity="'+(cur?1:.85)+'"/>';
+      if(lo===null||m.min<mesi[lo].min)lo=i;if(hi===null||m.min>mesi[hi].min)hi=i;}
+    s+='<line x1="'+(x-1)+'" x2="'+(x+w+1)+'" y1="'+y(m.pMin)+'" y2="'+y(m.pMin)+'" stroke="'+COL.plan+'" stroke-width="2"/>';
+    s+='<text x="'+(x+w/2)+'" y="'+(H-12)+'" fill="'+(cur?COL.text:COL.muted)+'" font-size="8" text-anchor="middle" font-weight="'+(cur?700:400)+'">'+MESI_N[+m.ym.slice(5,7)-1]+'</text>';
+    if(i===0||m.ym.slice(5,7)==='01')s+='<text x="'+(x+w/2)+'" y="'+(H-3)+'" fill="'+COL.muted+'" font-size="7.5" text-anchor="middle">'+m.ym.slice(0,4)+'</text>';
+    s+='<rect class="hit" data-i="'+i+'" x="'+(L+i*bw)+'" y="0" width="'+bw+'" height="'+(H-B)+'" fill="transparent"/>';
+  });
+  function lab(i,below){var m=mesi[i];s+='<text x="'+(L+i*bw+bw/2)+'" y="'+(below?y(m.min)+12:y(m.min)-4)+'" fill="'+(m.min<0?COL.warn:COL.text)+'" font-size="8.5" font-weight="700" text-anchor="middle">'+E(m.min).replace('€','')+'</text>';}
+  if(lo!==null)lab(lo,mesi[lo].min<0);if(hi!==null&&hi!==lo)lab(hi,false);
+  el.insertAdjacentHTML('beforeend',s+'</svg>');
+  var tt=$('tt');
+  el.querySelectorAll('.hit').forEach(function(r){
+    function sh(){var m=mesi[+r.dataset.i],d=m.min!=null?m.min-m.pMin:null;
+      tt.innerHTML='<b>'+lblM(m.ym)+'</b> · min 26<br>Previsione <b>'+E(m.min)+'</b><br>Piano '+E(m.pMin)+(d==null?'':' · <span style="color:'+(d>=0?COL.ok:(d>-100?COL.muted:COL.ko))+'">'+S(d)+'</span>')+'<br>Fine mese '+E(m.fine)+' (piano '+E(m.pFine)+')<br>Margine fido '+E(m.min==null?null:m.min+FIDO);
+      var bx=el.getBoundingClientRect(),rb=r.getBoundingClientRect(),x=rb.left-bx.left+rb.width/2;tt.style.opacity=1;tt.style.top='2px';tt.style.left=Math.max(0,Math.min(bx.width-170,x-85))+'px';}
+    r.addEventListener('click',sh);r.addEventListener('mouseenter',sh);r.addEventListener('mouseleave',function(){tt.style.opacity=0;});
+  });
+  el.addEventListener('touchstart',function(e){if(!e.target.classList.contains('hit'))tt.style.opacity=0;},{passive:true});
 }
 
 /* ======================= SPESE DAL TELEFONO ======================= */
@@ -311,23 +416,15 @@ async function saveSpesa(){
 }
 async function flushQueue(interactive){
   var q=LS.get('queue')||[];if(!q.length||DEMO)return true;
-  var f=LS.get('files');if(!f||!PWD)return false;
-  try{
-    if(!(await getToken(!!interactive)))return false;
-    var txt=(await driveGet(f.pend)).trim(),list=[];
-    if(txt)list=await decrypt(JSON.parse(txt),PWD);
-    var ids={};list.forEach(function(i){ids[i.id]=1;});q.forEach(function(i){if(!ids[i.id])list.push(i);});
-    await drivePut(f.pend,JSON.stringify(await encrypt(list,PWD)));
-    LS.set('pendRemote',list);LS.set('queue',[]);render();return true;
-  }catch(e){console.warn(e);return false;}
+  if(!LS.get('folder')||!PWD)return false;
+  try{return await syncPending(!!interactive);}catch(e){console.warn(e);setFoot('⚠️ Invio spesa non riuscito: '+e.message);return false;}
 }
 
 /* ======================= AVVIO ======================= */
-var DEMO_DATA={v:1,asof:new Date().toISOString(),fido:3000,saldoDisp:6200,saldoCont:3200,carte:{addebito:"novembre",base:{speso:980,budget:1200},oro:{speso:150,budget:400}},extra:{mese:"ottobre",budget:400,speso:260,prossimoBudget:400,prossimoDa:"1° novembre"},cond:{anno:2026,pagato:1400,budget:2000},target:{anno:2027,fine:15000,fineT:15000,ultimoScost:null,ultimoMese:null},
-  mesi:[["Ott 26",4200,1200,3500],["Nov 26",2600,-400,1900],["Dic 26",1100,-1900,4300],["Gen 27",4300,1300,3500],["Feb 27",3400,400,2600],["Mar 27",2600,-400,1800],["Apr 27",1700,-1300,900],["Mag 27",900,-2100,10700],["Giu 27",9800,6800,9000],["Lug 27",9000,6000,8100],["Ago 27",8100,5100,18800],["Set 27",18700,15700,17900],["Ott 27",17900,14900,17000],["Nov 27",17000,14000,16200],["Dic 27",15300,12300,15000]]};
+var DEMO_DATA={"v":2,"asof":new Date().toISOString(),"fido":3000,"saldoDisp":8400,"saldoCont":5400,"oggi":{"ym":"2026-10","d":12,"nd":31},"obiettivi":{"stato":"ok","min":-1260,"minYm":"2027-05","margine":1740,"fine26":4740,"fine27":6840,"pFine26":4800,"pFine27":6900,"soglia":-2500},"meseMin":{"ym":"2026-10","prev":1840,"piano":1800},"carte":{"mese":"2026-10","aperto":false,"giorno":12,"gg":31,"addebito":"Dic 26","base":{"speso":420,"budget":900},"oro":{"speso":310,"budget":600}},"extra":{"mese":"2026-10","speso":260,"budget":500,"giorno":12,"gg":31},"chiuso":{"ym":"2026-09","base":{"v":860,"def":true,"b":900},"oro":{"v":640,"def":false,"b":600},"extra":{"v":430,"b":500}},"mesi":[{"ym":"2026-10","pMin":1800,"pFine":3600,"min":1840,"fine":3540},{"ym":"2026-11","pMin":600,"pFine":2400,"min":540,"fine":2340},{"ym":"2026-12","pMin":-400,"pFine":4800,"min":-460,"fine":4740},{"ym":"2027-01","pMin":2100,"pFine":3900,"min":2040,"fine":3840},{"ym":"2027-02","pMin":1300,"pFine":3100,"min":1240,"fine":3040},{"ym":"2027-03","pMin":500,"pFine":2300,"min":440,"fine":2240},{"ym":"2027-04","pMin":-300,"pFine":1500,"min":-360,"fine":1440},{"ym":"2027-05","pMin":-1200,"pFine":8800,"min":-1260,"fine":8740},{"ym":"2027-06","pMin":4800,"pFine":7600,"min":4740,"fine":7540},{"ym":"2027-07","pMin":3500,"pFine":6100,"min":3440,"fine":6040},{"ym":"2027-08","pMin":1600,"pFine":11900,"min":1540,"fine":11840},{"ym":"2027-09","pMin":7200,"pFine":10500,"min":7140,"fine":10440},{"ym":"2027-10","pMin":5900,"pFine":9100,"min":5840,"fine":9040},{"ym":"2027-11","pMin":4300,"pFine":7700,"min":4240,"fine":7640},{"ym":"2027-12","pMin":2400,"pFine":6900,"min":2340,"fine":6840}],"importedIds":[]};
 function start(){
   if(DEMO){D=DEMO_DATA;show('scrMain');render();setFoot('Modalità dimostrativa con dati di esempio.');return;}
-  if(!LS.get('files')){show('scrSetup');return;}
+  if(!LS.get('folder')){['files','fpart'].forEach(LS.del);show('scrSetup');return;}
   var p=LS.get('pwd');
   if(p){PWD=p;var env=LS.get(cachedEnvKey);show('scrMain');
     (env?decrypt(env,p).then(function(d){D=d;render();}):Promise.resolve()).catch(function(){LS.del('pwd');show('scrPwd');}).then(function(){refreshData(false);});}

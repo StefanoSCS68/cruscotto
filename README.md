@@ -1,6 +1,6 @@
 # Cruscotto Conto – guida all'installazione
 
-App per il telefono che mostra l'andamento del conto rispetto al target, i residui delle carte, gli extra/contanti prelevabili e il condominio.
+App per il telefono: **tableau de bord** degli Obiettivi 2027 (margine sul fido, fine 2027 vs fine 2026), saldi, budget del mese (carte ed extra), traiettoria del minimo mensile rispetto al piano, ultimo mese chiuso e mesi da presidiare. Tutti i valori sono calcolati dalla dashboard (sintesi v2): l'app li mostra soltanto.
 I dati arrivano dalla dashboard del Mac tramite Google Drive, **cifrati con una password scelta da te**. Su GitHub viene pubblicato solo il codice dell'app, mai i dati.
 
 ---
@@ -15,7 +15,7 @@ I dati arrivano dalla dashboard del Mac tramite Google Drive, **cifrati con una 
 1. Apri la dashboard in Chrome e premi il pulsante **📱** accanto al pulsante blu di salvataggio.
 2. Seleziona la cartella **DashboardFinanziario** e autorizza l'accesso.
 3. Scegli una **password di cifratura** (almeno 8 caratteri, non riutilizzata altrove) e ripetila.
-4. Nella cartella compaiono due file: `cruscotto.enc.json` e `spese_in_sospeso.enc.json`.
+4. Nella cartella compare il file `cruscotto.enc.json` (scritto solo dalla dashboard). L'app creerà il proprio file `spese_app.enc.json` (scritto solo dall'app).
 
 Da quel momento:
 - **ogni volta che salvi** la dashboard (pulsante blu), la sintesi per l'app viene aggiornata automaticamente, se nella sessione hai già inserito la password;
@@ -51,13 +51,13 @@ API_KEY:   "AIza…",
 APP_ID:    "numero di progetto"
 ```
 
-L'app usa l'autorizzazione `drive.file`: può leggere e scrivere **solo i due file che selezioni**, non il resto del tuo Drive.
+L'app usa le autorizzazioni `drive.readonly` (lettura, usata solo per trovare `cruscotto.enc.json` nella cartella) e `drive.file` (scrittura, limitata al file creato dall'app `spese_app.enc.json`). App in modalità test: utilizzabile solo dal tuo account.
 
 ## 5. Installazione sul Samsung
 
 1. Apri `https://NOMEUTENTE.github.io/cruscotto/` in **Chrome**.
 2. **Collega Google Drive** → accedi → se compare "Google non ha verificato questa app" scegli *Continua* (è la tua app, in modalità test).
-3. Seleziona **entrambi** i file `cruscotto.enc.json` e `spese_in_sospeso.enc.json` → *Seleziona*.
+3. Seleziona la cartella **DashboardFinanziario** → *Seleziona*.
 4. Inserisci la password di cifratura (puoi spuntare "Ricorda su questo telefono").
 5. Menu **⋮ › Installa app** (o *Aggiungi a schermata Home*).
 
@@ -65,9 +65,12 @@ L'app usa l'autorizzazione `drive.file`: può leggere e scrivere **solo i due fi
 
 | Dove | Cosa fai | Effetto |
 |---|---|---|
-| Mac | Aggiorni la dashboard e salvi | L'app riceve la nuova sintesi (tocca ↻ Aggiorna) |
-| Telefono | **+** → spesa extra/contanti o carta | La spesa è subito conteggiata nell'app e inviata su Drive "in sospeso" |
-| Mac | Premi **📱** | Ti vengono proposte le spese dal telefono da importare |
+| Mac | Premi **📱** accanto al dischetto (la prima volta: cartella DashboardFinanziario + password) | La dashboard importa le spese registrate dal telefono (con conferma) e aggiorna `cruscotto.enc.json` |
+| Mac | Premi **Salva** | Nella stessa sessione, dopo il primo 📱, anche l'app viene aggiornata in automatico |
+| Telefono | **↻ Aggiorna** | L'app scarica la sintesi più recente |
+| Telefono | **+** → spesa extra/contanti o carta | La spesa è subito conteggiata nell'app e inviata in `spese_app.enc.json` |
+
+Le spese extra importate dal telefono entrano in dashboard come movimenti «📱» provvisori: quando importi l'estratto conto, il movimento bancario con lo stesso importo (entro 10 giorni) li sostituisce in automatico.
 
 **Prova senza dati reali:** `https://NOMEUTENTE.github.io/cruscotto/?demo=1`
 

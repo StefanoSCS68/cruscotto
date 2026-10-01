@@ -1,5 +1,5 @@
 /* Service worker: rende l'app installabile e utilizzabile offline (solo i file dell'app, mai i dati) */
-const CACHE = 'cruscotto-v1';
+const CACHE = 'cruscotto-v2';
 const FILES = ['./', './index.html', './config.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))); self.clients.claim(); });
