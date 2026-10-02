@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Cruscotto Conto</title>
 <style>
 :root{--bg:#0f1117;--card:#181b24;--card2:#1f2330;--line:rgba(255,255,255,.07);--text:#e8eaf2;--muted:#8a90a8;--ok:#34c78a;--warn:#f5b423;--ko:#e05252;--acc:#4f8ef7}
@@ -172,7 +173,7 @@ var DEMO=/[?&]demo=1/.test(location.search);
 function b64(buf){var b=new Uint8Array(buf),s='';for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s);}
 function unb64(s){var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
 async function deriveKey(pwd,salt,iter){var base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pwd),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
-async function encrypt(obj,pwd){var salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),iter=250000;var key=await deriveKey(pwd,salt,iter);var ct=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,new TextEncoder().encode(JSON.stringify(obj)));return {v:1,alg:'PBKDF2-SHA256/AES-GCM',iter:iter,salt:b64(salt),iv:b64(iv),ct:b64(ct)};}
+async function encrypt(obj,pwd,saltB64,iterIn){var salt=saltB64?unb64(saltB64):crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),iter=iterIn||250000;var key=await deriveKey(pwd,salt,iter);var ct=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,new TextEncoder().encode(JSON.stringify(obj)));return {v:1,alg:'PBKDF2-SHA256/AES-GCM',iter:iter,salt:b64(salt),iv:b64(iv),ct:b64(ct)};}
 async function decrypt(env,pwd){var key=await deriveKey(pwd,unb64(env.salt),env.iter||250000);var pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(env.iv)},key,unb64(env.ct));return JSON.parse(new TextDecoder().decode(pt));}
 
 /* ======================= GOOGLE (accesso solo ai file selezionati: drive.file) ======================= */
@@ -253,13 +254,16 @@ async function refreshData(interactive){
 /* file spese: scritto SOLO dall'app; le spese già importate dalla dashboard (importedIds) vengono tolte */
 async function syncPending(interactive){
   if(!(await getToken(!!interactive)))return false;
-  var q=LS.get('queue')||[],imp={},list=[],pid=await driveFind(PENDNAME);
+  var q=LS.get('queue')||[],imp={},list=[],pid=await driveFind(PENDNAME),oldEnv=null;
   ((D&&D.importedIds)||[]).forEach(function(i){imp[i]=1;});
-  if(pid){var txt=(await driveGet(pid)).trim();if(txt)list=await decrypt(JSON.parse(txt),PWD);}
+  if(pid){var txt=(await driveGet(pid)).trim();if(txt){oldEnv=JSON.parse(txt);list=await decrypt(oldEnv,PWD);}}
   var before=JSON.stringify(list),ids={};
   list=list.filter(function(i){return !imp[i.id];});list.forEach(function(i){ids[i.id]=1;});
   q.forEach(function(i){if(!ids[i.id]&&!imp[i.id])list.push(i);});
-  if(JSON.stringify(list)!==before||!pid){var enc=JSON.stringify(await encrypt(list,PWD));if(pid)await drivePut(pid,enc);else await driveCreate(PENDNAME,enc);}
+  // stesso «sale» del file della dashboard: la dashboard lo decifra con la chiave memorizzata, senza chiedere la password
+  var se=LS.get(cachedEnvKey),salt=se&&se.salt,iter=se&&se.iter;
+  var riallinea=!!(salt&&oldEnv&&oldEnv.salt!==salt);
+  if(JSON.stringify(list)!==before||!pid||riallinea){var enc=JSON.stringify(await encrypt(list,PWD,salt,iter));if(pid)await drivePut(pid,enc);else await driveCreate(PENDNAME,enc);}
   LS.set('pendRemote',list);LS.set('queue',[]);render();return true;
 }
 function setFoot(t){var h=$('hstat');if(h)h.textContent=t;$('foot').innerHTML=t+'<br><a href="#" onclick="resetApp();return false">Scollega / reimposta</a>';}
