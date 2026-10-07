@@ -144,7 +144,7 @@ header h1{font-size:20px;font-weight:700}
 <div id="tb"></div>
 <div class="pend" id="pendInfo"></div>
 <div class="foot" id="foot"></div>
-<button class="fab" onclick="openSheet()" aria-label="Registra spesa">+</button>
+<!-- 07/10/2026: app in sola lettura, registrazione spese disattivata (pulsante + tolto) -->
 </section>
 
 <div class="sheet-bg" id="sheet" onclick="if(event.target===this)closeSheet()">
@@ -247,7 +247,7 @@ async function refreshData(interactive){
     var sid=await driveFind(SUMNAME);if(!sid)throw new Error('file '+SUMNAME+' non trovato nella cartella '+LS.get('folder').name);
     var env=JSON.parse(await driveGet(sid)),d=await decrypt(env,PWD);
     LS.set(cachedEnvKey,env);D=d;render();
-    await syncPending(false);
+    // 07/10/2026: nessuna sincronizzazione delle spese dal telefono (app in sola lettura)
     var dt=new Date();setFoot('✓ Dati aggiornati alle '+dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+'.');
   }catch(e){setFoot('⚠️ Aggiornamento non riuscito: '+e.message+'. Mostro gli ultimi dati salvati.');}
 }
@@ -427,6 +427,7 @@ async function flushQueue(interactive){
 /* ======================= AVVIO ======================= */
 var DEMO_DATA={"v":2,"asof":new Date().toISOString(),"fido":3000,"saldoDisp":8400,"saldoCont":5400,"oggi":{"ym":"2026-10","d":12,"nd":31},"obiettivi":{"stato":"ok","min":-1260,"minYm":"2027-05","margine":1740,"fine26":4740,"fine27":6840,"pFine26":4800,"pFine27":6900,"soglia":-2500},"meseMin":{"ym":"2026-10","prev":1840,"piano":1800},"carte":{"mese":"2026-10","aperto":false,"giorno":12,"gg":31,"addebito":"Dic 26","base":{"speso":420,"budget":900},"oro":{"speso":310,"budget":600}},"extra":{"mese":"2026-10","speso":260,"budget":500,"giorno":12,"gg":31},"chiuso":{"ym":"2026-09","base":{"v":860,"def":true,"b":900},"oro":{"v":640,"def":false,"b":600},"extra":{"v":430,"b":500}},"mesi":[{"ym":"2026-10","pMin":1800,"pFine":3600,"min":1840,"fine":3540},{"ym":"2026-11","pMin":600,"pFine":2400,"min":540,"fine":2340},{"ym":"2026-12","pMin":-400,"pFine":4800,"min":-460,"fine":4740},{"ym":"2027-01","pMin":2100,"pFine":3900,"min":2040,"fine":3840},{"ym":"2027-02","pMin":1300,"pFine":3100,"min":1240,"fine":3040},{"ym":"2027-03","pMin":500,"pFine":2300,"min":440,"fine":2240},{"ym":"2027-04","pMin":-300,"pFine":1500,"min":-360,"fine":1440},{"ym":"2027-05","pMin":-1200,"pFine":8800,"min":-1260,"fine":8740},{"ym":"2027-06","pMin":4800,"pFine":7600,"min":4740,"fine":7540},{"ym":"2027-07","pMin":3500,"pFine":6100,"min":3440,"fine":6040},{"ym":"2027-08","pMin":1600,"pFine":11900,"min":1540,"fine":11840},{"ym":"2027-09","pMin":7200,"pFine":10500,"min":7140,"fine":10440},{"ym":"2027-10","pMin":5900,"pFine":9100,"min":5840,"fine":9040},{"ym":"2027-11","pMin":4300,"pFine":7700,"min":4240,"fine":7640},{"ym":"2027-12","pMin":2400,"pFine":6900,"min":2340,"fine":6840}],"importedIds":[]};
 function start(){
+  LS.del('queue');LS.del('pendRemote'); // 07/10/2026: app in sola lettura, nessuna spesa in sospeso
   if(DEMO){D=DEMO_DATA;show('scrMain');render();setFoot('Modalità dimostrativa con dati di esempio.');return;}
   if(!LS.get('folder')){['files','fpart'].forEach(LS.del);show('scrSetup');return;}
   var p=LS.get('pwd');
