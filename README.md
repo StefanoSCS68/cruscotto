@@ -51,26 +51,24 @@ API_KEY:   "AIza…",
 APP_ID:    "numero di progetto"
 ```
 
-L'app usa le autorizzazioni `drive.readonly` (lettura, usata solo per trovare `cruscotto.enc.json` nella cartella) e `drive.file` (scrittura, limitata al file creato dall'app `spese_app.enc.json`). App in modalità test: utilizzabile solo dal tuo account.
+Dal 16/10/2026 l'app usa solo l'autorizzazione `drive.file`: può leggere esclusivamente il file `cruscotto.enc.json` che selezioni con il selettore di Google, nessun altro file del tuo Drive (prima chiedeva anche `drive.readonly`, cioè la lettura di tutto Drive). App in modalità test: utilizzabile solo dal tuo account.
 
 ## 5. Installazione sul Samsung
 
 1. Apri `https://NOMEUTENTE.github.io/cruscotto/` in **Chrome**.
 2. **Collega Google Drive** → accedi → se compare "Google non ha verificato questa app" scegli *Continua* (è la tua app, in modalità test).
-3. Seleziona la cartella **DashboardFinanziario** → *Seleziona*.
-4. Inserisci la password di cifratura (puoi spuntare "Ricorda su questo telefono").
+3. Apri la cartella **DashboardFinanziario** e seleziona il file **cruscotto.enc.json** → *Seleziona*.
+4. Inserisci la password di cifratura (puoi spuntare "Ricorda su questo telefono": si conserva una chiave non leggibile, mai la password).
 5. Menu **⋮ › Installa app** (o *Aggiungi a schermata Home*).
 
 ## Uso quotidiano
 
 | Dove | Cosa fai | Effetto |
 |---|---|---|
-| Mac | Premi **📱** accanto al dischetto (la prima volta: cartella DashboardFinanziario + password) | La dashboard importa le spese registrate dal telefono (con conferma) e aggiorna `cruscotto.enc.json` |
-| Mac | Premi **Salva** | Nella stessa sessione, dopo il primo 📱, anche l'app viene aggiornata in automatico |
+| Mac | Apri la dashboard o premi **Salva** | La dashboard aggiorna `cruscotto.enc.json` |
 | Telefono | **↻ Aggiorna** | L'app scarica la sintesi più recente |
-| Telefono | **+** → spesa extra/contanti o carta | La spesa è subito conteggiata nell'app e inviata in `spese_app.enc.json` |
 
-Le spese extra importate dal telefono entrano in dashboard come movimenti «📱» provvisori: quando importi l'estratto conto, il movimento bancario con lo stesso importo (entro 10 giorni) li sostituisce in automatico.
+Dal 07/10/2026 l'app è in sola lettura (nessuna registrazione di spese dal telefono). Sotto la data dei dati l'app mostra la data dell'ultimo movimento del conto importato nella dashboard; oltre 2 giorni lavorativi compare «⚠ movimenti fermi al …».
 
 **Prova senza dati reali:** `https://NOMEUTENTE.github.io/cruscotto/?demo=1`
 
@@ -78,4 +76,13 @@ Le spese extra importate dal telefono entrano in dashboard come movimenti «📱
 
 - Dati cifrati con AES-GCM 256 bit, chiave derivata dalla password (PBKDF2-SHA256, 250.000 iterazioni). Google vede solo file illeggibili.
 - La password non viene mai inviata a nessuno. Se la perdi: premi 📱 in una nuova sessione della dashboard dopo aver cancellato i due file dalla cartella; ne verrà chiesta una nuova.
-- "Scollega / reimposta" (in fondo all'app) cancella dal telefono collegamento, password memorizzata e dati.
+- «Ricorda su questo telefono» conserva una chiave di decifratura **non estraibile** (IndexedDB del browser), mai la password. Se cambi la password nella dashboard, l'app la richiede una volta.
+- Se il file `cruscotto.enc.json` su Drive viene sostituito o cestinato, l'app chiede di selezionarlo di nuovo.
+- "Scollega / reimposta" (in fondo all'app) cancella dal telefono collegamento, chiave memorizzata e dati.
+
+## Aggiornamento del 16/10/2026 (versione cache cruscotto-v6)
+
+1. Su GitHub, repository **cruscotto**: *Add file › Upload files* → carica `index.html`, `sw.js` e `README.md` (sostituiscono quelli esistenti) → *Commit changes*.
+2. Sul telefono apri l'app, chiudila e riaprila (o tocca ↻): parte la nuova versione. La password ricordata viene convertita in chiave e cancellata.
+3. Tocca **Seleziona il file su Google Drive**: al primo tocco Google revoca il vecchio permesso; al secondo concedi il solo accesso ai file scelti, poi seleziona `cruscotto.enc.json` nella cartella DashboardFinanziario.
+4. Verifica: su myaccount.google.com › Sicurezza › Le tue connessioni a app e servizi di terze parti, «Cruscotto Conto» deve avere solo l'accesso ai file usati con l'app.
