@@ -80,7 +80,7 @@ Dal 07/10/2026 l'app è in sola lettura (nessuna registrazione di spese dal tele
 - Se il file `cruscotto.enc.json` su Drive viene sostituito o cestinato, l'app chiede di selezionarlo di nuovo.
 - "Scollega / reimposta" (in fondo all'app) cancella dal telefono collegamento, chiave memorizzata e dati.
 
-## Aggiornamento del 16/10/2026 (versione cache cruscotto-v6)
+## Aggiornamento del 16/10/2026 (versione cache cruscotto-v8)
 
 1. Su GitHub, repository **cruscotto**: *Add file › Upload files* → carica `index.html`, `sw.js` e `README.md` (sostituiscono quelli esistenti) → *Commit changes*.
 2. Sul telefono apri l'app, chiudila e riaprila (o tocca ↻): parte la nuova versione. La password ricordata viene convertita in chiave e cancellata.
