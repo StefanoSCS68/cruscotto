@@ -152,6 +152,18 @@ button.itb .top b::after{content:' ›';color:var(--muted);font-weight:400}
 .indm{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line,#e3e5ea)}
 .indm div{display:flex;flex-direction:column;gap:2px}.indm span{font-size:11px;color:var(--muted)}.indm b{font:700 17px var(--f-disp)}.indm b.neg{color:var(--warn-text)}
 .nota-al{margin:8px 2px 0;line-height:1.45}
+.sv{margin:4px 0 6px}
+.sv-v.ok,.sv-v.ko,.sv-v.nu{color:var(--text)}
+.sv-v{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:12px 14px;margin-bottom:8px}
+.sv-c{flex:0 0 34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font:700 20px/1 var(--f-disp)}
+.sv-v.ok .sv-c{background:#3E8566}.sv-v.ko .sv-c{background:#D2522F}.sv-v.nu .sv-c{background:var(--muted2)}
+.sv-tx{flex:1;min-width:0;display:flex;flex-direction:column}.sv-tx b{font:600 16px var(--f-body)}.sv-tx small{font-size:12px;color:var(--muted);line-height:1.35}
+.sv-n{text-align:right;display:flex;flex-direction:column;align-items:flex-end}.sv-n span{font:700 18px var(--f-num);white-space:nowrap}.sv-n small{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.sv-v.ok .sv-n span,.sv-tv.ok{color:#2F7354}.sv-v.ko .sv-n span,.sv-tv.ko{color:#C2410C}.sv-tv.nu{color:var(--muted)}
+.sv-tt{border-top:3px solid var(--ink2);margin-top:4px}
+.sv-t{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line)}
+.sv-t:last-child{border-bottom:none}.sv-t b{font:600 15px var(--f-body)}.sv-t small{font-size:11.5px;color:var(--muted)}
+.sv-tv{font:700 21px var(--f-disp);white-space:nowrap}.sv-t.big .sv-tv{font-size:25px}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -396,10 +408,22 @@ function render(){
     // 17/10/2026: intestazione con gli indicatori sintetici del mese, identici al salvadanaio della dashboard (09):
     // libero nel mese = margine (carte + Extra conto rispetto al budget, cifre della dashboard) − accantonato (buste a riporto)
     if(IN){
-      h+='<section class="blk ink"><div class="pair" style="border-top:none;padding-top:0"><div><span class="cap">Libero nel mese</span><span style="font:700 30px var(--f-disp);letter-spacing:-.03em;margin-top:4px">'+S(IN.libero)+'</span>'+
-         '<span class="sm">margine '+S(IN.margine)+' − accantonato '+E(IN.accantonato)+'</span>'+
-         '<span class="sm" style="opacity:.75">carte '+S(IN.carte)+' · Extra conto '+S(IN.extra)+' su '+E(IN.preventivo)+' di budget</span></div>'+
-         '<div style="border-left:1px solid var(--ink2);padding-left:16px"><span class="cap">Accantonato</span><span style="font:700 30px var(--f-disp);letter-spacing:-.03em;margin-top:4px">'+E(IN.accantonato)+'</span><span class="sm">buste a riporto, non spendibile'+(IN.fondi>=0.5?' · più fondi accumulati '+E2(IN.fondi):'')+'</span></div></div></section>';
+      // 17/10/2026 (richiesta dell'utente): stessa grafica del «salvadanaio del mese» della dashboard (pagina 09)
+      var cgS=Math.max(1,K.giorno||1),cggS=K.gg||cgS,egS=Math.max(1,X.giorno||1),eggS=X.gg||egS;
+      var rBs=(K.base.budget||0)-(K.base.speso||0),rOs=(K.oro.budget||0)-(K.oro.speso||0),rEs=(X.budget||0)-(X.speso||0);
+      var pBs=(K.base.budget||0)-(K.base.speso||0)*cggS/cgS,pOs=(K.oro.budget||0)-(K.oro.speso||0)*cggS/cgS;
+      var cls=function(v){return v>=0.5?'ok':(v<=-0.5?'ko':'nu');};
+      var voce=function(n,d,v,nota){return '<div class="sv-v '+cls(v)+'"><span class="sv-c" aria-hidden="true">'+(v>=0.5?'+':(v<=-0.5?'−':'='))+'</span><div class="sv-tx"><b>'+n+'</b><small>'+d+'</small></div><div class="sv-n"><span>'+S(v)+'</span>'+(nota?'<small>'+nota+'</small>':'')+'</div></div>';};
+      var tot=function(n,d,v,c,big){return '<div class="sv-t'+(big?' big':'')+'"><span><b>'+n+'</b> <small>'+d+'</small></span><span class="sv-tv '+c+'">'+v+'</span></div>';};
+      h+='<section class="sv">'+
+        voce('Carta Base','tetto '+E(K.base.budget)+' · speso '+E(K.base.speso)+' al giorno '+cgS+' di '+cggS,rBs,'al ritmo: '+S(pBs))+
+        voce('Carta Oro','tetto '+E(K.oro.budget)+' · speso '+E(K.oro.speso)+' al giorno '+cgS+' di '+cggS,rOs,'al ritmo: '+S(pOs))+
+        voce('Extra conto','budget '+E(X.budget)+' · spesi '+E(X.speso)+' al giorno '+egS+' di '+eggS,rEs,rEs<-0.5?'già nella previsione':'')+
+        '<div class="sv-tt">'+
+        tot('Margine del mese','carte + Extra conto rispetto al budget',S(IN.margine),cls(IN.margine),true)+
+        tot('Accantonato','buste a riporto, non spendibile'+(IN.fondi>=0.5?' · più fondi accumulati '+E(IN.fondi):''),IN.accantonato>=0.5?'−'+E(IN.accantonato):'€0','nu')+
+        tot('Libero nel mese','margine − accantonato',S(IN.libero),cls(IN.libero))+
+        '</div></section>';
       // buste (Actual) e carte (dashboard) non allineate: lo si dice, così le due cifre non sembrano in contraddizione
       var spA=B.totale&&B.totale.speso!=null?+B.totale.speso:null, spD=K&&K.mese===bym?(+K.base.speso||0)+(+K.oro.speso||0):null;
       if(spA!=null&&spD!=null&&Math.abs(spA-spD)>=1) h+='<div class="sm nota-al">Speso carte: dashboard '+E2(spD)+' · buste di Actual '+E2(spA)+'. Gli indicatori usano la dashboard; per allineare le buste, sul Mac esegui <b>node aggiorna.mjs</b> e ricarica la dashboard.</div>';
