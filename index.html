@@ -149,6 +149,9 @@ button.itb:last-child{border-bottom:none}
 button.itb .it{border-bottom:none}
 button.itb .top b::after{content:' ›';color:var(--muted);font-weight:400}
 .oldv{border:1px solid #FFC9A8}
+.indm{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line,#e3e5ea)}
+.indm div{display:flex;flex-direction:column;gap:2px}.indm span{font-size:11px;color:var(--muted)}.indm b{font:700 17px var(--f-disp)}.indm b.neg{color:var(--warn-text)}
+.nota-al{margin:8px 2px 0;line-height:1.45}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -310,6 +313,13 @@ var MESI_N=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','D
 var COL={ok:'#34c78a',warn:'#f5a623',ko:'#e05252',acc:'#4f8ef7',plan:'#8fb4ff',muted:'#8a90a8',s2:'#252840',text:'#e8eaf2'};
 function E(v){if(v==null||isNaN(v))return '—';v=Math.round(v);return (v<0?'−':'')+'€'+Math.abs(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
 function E2(v){return (v<0?'−':'')+'€'+Math.abs(v).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+// indicatori sintetici del mese (17/10/2026): stessa definizione della dashboard (MotoreFin.indicatoriMese, salvadanaio 09).
+// Si usa il campo «indicatori» calcolato dalla dashboard; il calcolo qui sotto serve solo per file del formato precedente.
+function IND(D){if(D.indicatori)return D.indicatori;var C=D.carte||{},X=D.extra||{};if(!C.base||!C.oro)return null;
+  var carte=(C.base.budget||0)-(C.base.speso||0)+(C.oro.budget||0)-(C.oro.speso||0),extra=(X.budget||0)-(X.speso||0),rip=0,Bu=D.buste&&D.buste.mese===C.mese?D.buste:null;
+  if(Bu)(Bu.buste||[]).forEach(function(b){if(b.riporto)rip+=Math.max(0,(b.preventivo||0)-(b.speso||0));});
+  var acc=Math.min(rip,Math.max(0,carte)),m=carte+extra;
+  return {meseCarte:C.mese,meseExtra:X.mese,carte:carte,extra:extra,margine:m,accantonato:acc,libero:m-acc,fondi:Bu?(+Bu.accantonato||0):0,buste:!!Bu,preventivo:(C.base.budget||0)+(C.oro.budget||0)+(X.budget||0)};}
 function S(v){v=Math.round(v);return (v>=0?'+':'−')+E(Math.abs(v)).slice(0);}
 function lblM(ym,long){var m=+ym.slice(5,7)-1;return long?MESI_N[m].toLowerCase()+' '+ym.slice(2,4):MESI_N[m]+' '+ym.slice(2,4);}
 function shiftYM(ym,k){var y=+ym.slice(0,4),m=+ym.slice(5,7)+k;while(m>12){m-=12;y++;}while(m<1){m+=12;y--;}return y+'-'+('0'+m).slice(-2);}
@@ -344,6 +354,7 @@ function render(){
   var fm=function(ym){for(var i=0;i<mesi.length;i++)if(mesi[i].ym===ym)return mesi[i];return {};};
   var f26=fm('2026-12').fine,f27=fm('2027-12').fine,marg=minM?minM.min+FIDO:null,dA=(f26!=null&&f27!=null)?f27-f26:null;
   var st=(marg!=null&&marg<0)||(dA!=null&&dA<=0)?'ko':((minM&&minM.min<O.soglia)||mesi.some(function(m){return m.min!=null&&m.min<m.pMin-100;}))?'warn':'ok';
+  var IN=IND(D);
   var B=D.buste||null,acc=B?(+B.accantonato||0):0,lib=marg==null?null:marg-acc,sogliaD=O.soglia+FIDO;
   var sd=D.saldoDisp,sc=D.saldoCont,h='';
 
@@ -362,12 +373,13 @@ function render(){
   }
   var cg=K.aperto?K.gg:K.giorno,rC=cg/K.gg,rX=X.giorno/X.gg,mN=lblM(X.mese,true).split(' ')[0],MESI_L=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'],mL=MESI_L[+X.mese.slice(5,7)-1];
   h+='<section class="blk"><div class="hd"><span style="font:700 18px var(--f-disp)">'+mL.charAt(0).toUpperCase()+mL.slice(1)+'</span><span class="r">giorno '+X.giorno+' di '+X.gg+'</span></div>'+
-     riga('Carta Base',K.base.speso,K.base.budget,rC)+riga('Carta Oro',K.oro.speso,K.oro.budget,rC)+riga('Extra non carta',X.speso,X.budget,rX)+
+     riga('Carta Base',K.base.speso,K.base.budget,rC)+riga('Carta Oro',K.oro.speso,K.oro.budget,rC)+riga('Extra conto',X.speso,X.budget,rX)+
      '<div class="legend"><span><i class="tkl"></i>ritmo atteso a oggi</span></div>'+
+     (IN?'<div class="indm"><div><span>Margine del mese</span><b>'+S(IN.margine)+'</b></div><div><span>Accantonato</span><b>'+(IN.accantonato>=0.5?'−'+E(IN.accantonato):'€0')+'</b></div><div><span>Libero nel mese</span><b class="'+(IN.libero>=0?'':'neg')+'">'+S(IN.libero)+'</b></div></div>':'')+
      (K.aperto?'<div class="sm" style="margin-top:8px">Carte: mese di '+lblM(K.mese,true).split(' ')[0]+' ancora aperto in dashboard (addebito '+esc(K.addebito)+').</div>':'')+'</section>';
   var gk={ok:'Obiettivo raggiunto',warn:'Da presidiare',ko:'A rischio'}[st];
   h+='<section class="blk out"><div class="hd"><div><div class="sm">Fine 2027 rispetto a fine 2026</div><div style="font:700 22px var(--f-disp);margin-top:2px">'+(dA==null?'—':S(dA))+'</div></div><span class="chip '+st+'">'+gk+'</span></div>'+
-     '<div class="sm" style="margin-top:6px">Se rispetti budget carte, extra e Piano Mensile · piano '+E(O.pFine26)+' → '+E(O.pFine27)+'</div></section>';
+     '<div class="sm" style="margin-top:6px">Se rispetti budget carte, Extra conto e Piano Mensile · piano '+E(O.pFine26)+' → '+E(O.pFine27)+'</div></section>';
   $('pOggi').innerHTML=h;
 
   // ===== BUSTE =====
@@ -380,14 +392,18 @@ function render(){
     var FISSE=['Telefonia mobile','Abbonamenti piattaforme'];
     var norm=[],acb=[],totLib=0,totPrev=0;
     B.buste.forEach(function(b){var l=(+b.saldo||0)-(+b.accumulato||0);totLib+=l;totPrev+=(+b.preventivo||0);if(b.riporto)acb.push(b);else norm.push(b);});
-    h+='<div class="ttl-s">Da Actual, aggiornate al '+gd.toLocaleDateString('it-IT',{day:'numeric',month:'short'})+' · ritmo al giorno '+gB+' di '+ndB+'</div>';
-    // 17/10/2026 (opzione C scelta dall'utente): libero nel mese = residuo delle buste carte (Actual) + residuo Extra non carta
-    // (dashboard, stesso mese); sotto, la composizione «carte · extra», così si vede dove si concentra lo sforamento
-    var exOk=X&&X.mese===bym&&X.budget!=null, exR=exOk?(+X.budget||0)-(+X.speso||0):0, totAll=totLib+exR;
-    h+='<section class="blk ink"><div class="pair" style="border-top:none;padding-top:0"><div><span class="cap">Libero nel mese</span><span style="font:700 30px var(--f-disp);letter-spacing:-.03em;margin-top:4px">'+E(totAll)+'</span>'+
-       '<span class="sm">'+(exOk?'carte '+E(totLib)+' · extra '+E(exR):'solo carte: extra non disponibili')+'</span>'+
-       '<span class="sm" style="opacity:.75">su '+E(totPrev+(exOk?+X.budget||0:0))+' di preventivo</span></div>'+
-       '<div style="border-left:1px solid var(--ink2);padding-left:16px"><span class="cap">Accantonato</span><span style="font:700 30px var(--f-disp);letter-spacing:-.03em;margin-top:4px">'+E2(acc)+'</span><span class="sm">già destinato, non spendibile</span></div></div></section>';
+    h+='<div class="ttl-s">Da Actual, aggiornate al '+gd.toLocaleDateString('it-IT',{day:'numeric',month:'short'})+' alle '+gd.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+' · ritmo al giorno '+gB+' di '+ndB+'</div>';
+    // 17/10/2026: intestazione con gli indicatori sintetici del mese, identici al salvadanaio della dashboard (09):
+    // libero nel mese = margine (carte + Extra conto rispetto al budget, cifre della dashboard) − accantonato (buste a riporto)
+    if(IN){
+      h+='<section class="blk ink"><div class="pair" style="border-top:none;padding-top:0"><div><span class="cap">Libero nel mese</span><span style="font:700 30px var(--f-disp);letter-spacing:-.03em;margin-top:4px">'+S(IN.libero)+'</span>'+
+         '<span class="sm">margine '+S(IN.margine)+' − accantonato '+E(IN.accantonato)+'</span>'+
+         '<span class="sm" style="opacity:.75">carte '+S(IN.carte)+' · Extra conto '+S(IN.extra)+' su '+E(IN.preventivo)+' di budget</span></div>'+
+         '<div style="border-left:1px solid var(--ink2);padding-left:16px"><span class="cap">Accantonato</span><span style="font:700 30px var(--f-disp);letter-spacing:-.03em;margin-top:4px">'+E(IN.accantonato)+'</span><span class="sm">buste a riporto, non spendibile'+(IN.fondi>=0.5?' · più fondi accumulati '+E2(IN.fondi):'')+'</span></div></div></section>';
+      // buste (Actual) e carte (dashboard) non allineate: lo si dice, così le due cifre non sembrano in contraddizione
+      var spA=B.totale&&B.totale.speso!=null?+B.totale.speso:null, spD=K&&K.mese===bym?(+K.base.speso||0)+(+K.oro.speso||0):null;
+      if(spA!=null&&spD!=null&&Math.abs(spA-spD)>=1) h+='<div class="sm nota-al">Speso carte: dashboard '+E2(spD)+' · buste di Actual '+E2(spA)+'. Gli indicatori usano la dashboard; per allineare le buste, sul Mac esegui <b>node aggiorna.mjs</b> e ricarica la dashboard.</div>';
+    }
     var cand=norm.filter(function(b){return FISSE.indexOf(b.nome)<0&&b.preventivo>0;}).map(function(b){return {b:b,q:b.speso/b.preventivo};})
       .filter(function(x){return x.q>rB*1.1||x.b.speso>x.b.preventivo;}).sort(function(a,b){return b.q-a.q;}).slice(0,3);
     if(cand.length){
@@ -425,7 +441,7 @@ function render(){
        '<div class="sm" style="margin-top:10px">Piano '+E(minM.pMin)+': '+(Math.abs(dP)<=100?'scostamento '+S(dP)+', entro la tolleranza di €100.':'scostamento '+S(dP)+'.')+'</div></section>';}
   h+='<div class="list" style="margin-top:12px"><div class="kv"><span>Fine 2026</span><span class="num">'+E(f26)+' <span>· piano '+E(O.pFine26)+'</span></span></div><div class="kv"><span>Fine 2027</span><span class="num">'+E(f27)+' <span>· piano '+E(O.pFine27)+'</span></span></div><div class="kv" style="font-weight:600"><span>Differenza</span><span class="num" style="color:'+(dA>0?'var(--acc-text)':'var(--warn-text)')+'">'+(dA==null?'—':S(dA))+'</span></div></div>';
   var C=D.chiuso,dv=[],tot=0;
-  if(C){[['Carta Base',C.base,true],['Carta Oro',C.oro,true],['Extra',C.extra,false]].forEach(function(x){var o=x[1];if(!o||o.v==null||o.b==null)return;var d=o.v-o.b;tot+=d;dv.push({n:x[0],d:d,t:E(o.v)+' / '+E(o.b)+(x[2]&&!o.def?' · p':'')});});
+  if(C){[['Carta Base',C.base,true],['Carta Oro',C.oro,true],['Extra conto',C.extra,false]].forEach(function(x){var o=x[1];if(!o||o.v==null||o.b==null)return;var d=o.v-o.b;tot+=d;dv.push({n:x[0],d:d,t:E(o.v)+' / '+E(o.b)+(x[2]&&!o.def?' · p':'')});});
     var mx=Math.max(100,Math.max.apply(null,dv.map(function(x){return Math.abs(x.d);}).concat([0])));
     h+='<div class="sec">Ultimo mese chiuso · '+lblM(C.ym,true)+'</div><section class="blk" style="margin-top:0"><div class="hd"><span class="t">Rispetto al budget</span><span class="chip '+(tot>0?'warn':'ok')+'">'+S(tot)+'</span></div>'+
       dv.map(function(x){var w=Math.min(50,Math.abs(x.d)/mx*50),c=x.d>0?'var(--warn)':'var(--acc)';return '<div class="dv"><span>'+x.n+'<br><span class="sm" style="font-size:10px">'+x.t+'</span></span><div class="b2"><div class="mid"></div><i style="'+(x.d>0?'left:50%':'right:50%')+';width:'+Math.max(w,1)+'%;background:'+c+'"></i></div><span class="val" style="color:'+(x.d>0?'var(--warn-text)':'var(--acc-text)')+'">'+S(x.d)+'</span></div>';}).join('')+
